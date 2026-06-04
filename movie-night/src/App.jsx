@@ -23,14 +23,26 @@ const mockMovies = [
 
 function App() {
   const [searchTerm, setSearchTerm] = useState(""); // State to hold the search term
-
   const [submittedSearch, setSubmittedSearch] = useState(""); // State to hold the submitted search term
+
+  const [watchlist, setWatchlist] = useState([]); // State to hold the watchlist movies
 
   function handleSearch(event) {
     event.preventDefault(); // Prevent the default form submission behavior
 
     setSubmittedSearch(searchTerm); // Update the submitted search term state
   }
+
+  function handleAddToWatchlist(movie) {
+    // Check if the movie is already in the watchlist
+    if (!watchlist.some((savedMovie) => savedMovie.id === movie.id)) {
+      setWatchlist([...watchlist, movie]); // Add the movie to the watchlist
+    }
+  }
+  function handleRemoveFromWatchlist(movie) {
+    setWatchlist(watchlist.filter((m) => m.id !== movie.id)); // Remove the movie from the watchlist
+  }
+
 
   const filteredMovies = mockMovies.filter((movie) => {
     return movie.title.toLowerCase().includes(submittedSearch.toLowerCase());
@@ -63,6 +75,9 @@ function App() {
                     <h3>{movie.title}</h3>
                     <p>({movie.year})</p>
                     <p>{movie.overview}</p>
+                    <button type="button" onClick={() => handleAddToWatchlist(movie)}>
+                      +
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -71,6 +86,25 @@ function App() {
             )}
           </section>
         )}
+        <section>
+          <h2>Watchlist</h2>
+          <p>{watchlist.length} saved movies</p>
+          {watchlist.length > 0 ? (
+            <ul>
+              {watchlist.map((movie) => (
+                <li key={movie.id} className="movie-card">
+                  <h3>{movie.title}</h3>
+                  <p>({movie.year})</p>
+                  <button type="button" onClick={() => handleRemoveFromWatchlist(movie)}>
+                    -
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>Your watchlist is empty.</p>
+          )}
+        </section>
       </div>
     </main>
   );
