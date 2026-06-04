@@ -3,18 +3,21 @@ import { useState } from "react";
 const mockMovies = [
   {
     id: 1,
-    title: "Spider-Man: Into the Spider-Verse",
-    year: "2018",
+    title: 'Spider-Man: Into the Spider-Verse',
+    year: '2018',
+    overview: 'Teen Miles Morales becomes Spider-Man and discovers a multiverse of Spider-heroes.',
   },
   {
     id: 2,
-    title: "The Batman",
-    year: "2022",
+    title: 'The Batman',
+    year: '2022',
+    overview: 'Batman investigates corruption in Gotham while hunting a mysterious killer.',
   },
   {
     id: 3,
-    title: "Everything Everywhere All at Once",
-    year: "2022",
+    title: 'Everything Everywhere All at Once',
+    year: '2022',
+    overview: 'A laundromat owner is pulled into a wild multiverse adventure to save existence.',
   },
 ];
 
@@ -56,8 +59,10 @@ function App() {
             {filteredMovies.length > 0 ? (
               <ul>
                 {filteredMovies.map((movie) => (
-                  <li key={movie.id}>
-                    {movie.title} ({movie.year})
+                  <li key={movie.id} className="movie-card">
+                    <h3>{movie.title}</h3>
+                    <p>({movie.year})</p>
+                    <p>{movie.overview}</p>
                   </li>
                 ))}
               </ul>
