@@ -1,4 +1,5 @@
 import { useState } from "react";
+import SearchForm from "./components/SearchForm.jsx";
 
 const mockMovies = [
   {
@@ -67,20 +68,11 @@ function App() {
         <p>Plan movies, snacks, guests, and watch nights.</p>
       </header>
 
-      <section className="search-section">
-        <h2>Search Movies</h2>
-
-        <form onSubmit={handleSearch}>
-          <input
-            type="text"
-            placeholder="Search for movies..."
-            value={searchTerm}
-            onChange={(event) => setSearchTerm(event.target.value)}
-          />
-
-          <button type="submit">Search</button>
-        </form>
-      </section>
+      <SearchForm
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        onSearch={handleSearch}
+      />
 
       {submittedSearch && (
         <section className="results-section">
