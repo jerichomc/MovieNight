@@ -3,11 +3,11 @@ function SearchForm({ searchTerm, setSearchTerm, onSearch}) {
         <section className="search-section">
             <h2>Search Movies</h2>
 
-            <form onSubmit={onSearch}>
-                <input type="text"
+            <form onSubmit={onSearch}> 
+                <input type="text" 
                 placeholder="Search for movies..."
-                value={searchTerm}
-                onChange={(event) => setSearchTerm(event.target.value)}
+                value={searchTerm} // Update the search term as the user types
+                onChange={(event) => setSearchTerm(event.target.value)} // Update the search term state on input change
                 ></input>
                 <button type="submit">Search</button>
             </form>

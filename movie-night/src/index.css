@@ -25,6 +25,7 @@ form {
   display: flex;
   gap: 12px;
   margin-bottom: 24px;
+  max-width: 700px;
 }
 
 input {
@@ -49,6 +50,11 @@ button:hover {
   background: #1d4ed8;
 }
 
+button:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+
 ul {
   padding: 18px;
   border: 1px solid #e5e7eb;
@@ -64,3 +70,44 @@ ul {
   margin: 6px 0;
   line-height: 1.5;
 }
+
+.movie-card button {
+  margin-top: 8px;
+}
+
+header {
+  margin-bottom: 32px;
+}
+
+header p {
+  margin-top: 0;
+  color: #64748b;
+}
+
+section {
+  margin-bottom: 32px;
+}
+
+.search-section,
+.results-section,
+.watchlist-section {
+  padding-top: 8px;
+}
+
+.selected-movie {
+  margin-top: 24px;
+  padding: 18px;
+  border-left: 4px solid #2563eb;
+  border-radius: 8px;
+  background: #eff6ff;
+}
+
+.selected-movie h3 {
+  margin-top: 0;
+}
+
+.selected-movie p {
+  margin-bottom: 0;
+  font-weight: 700;
+}
+

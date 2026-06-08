@@ -1,5 +1,7 @@
 import { useState } from "react";
 import SearchForm from "./components/SearchForm.jsx";
+import MovieList from "./components/MovieList.jsx";
+import Watchlist from "./components/Watchlist.jsx";
 
 const mockMovies = [
   {
@@ -36,8 +38,8 @@ function App() {
   });
 
   function handleSearch(event) {
-    event.preventDefault();
-    setSubmittedSearch(searchTerm);
+    event.preventDefault(); // Prevent the default form submission behavior
+    setSubmittedSearch(searchTerm); // Update the submitted search term to trigger the movie list update
   }
 
   function handleAddToWatchlist(movie) {
@@ -74,72 +76,18 @@ function App() {
         onSearch={handleSearch}
       />
 
-      {submittedSearch && (
-        <section className="results-section">
-          <h2>Search Results for "{submittedSearch}"</h2>
+      <MovieList
+        submittedSearch={submittedSearch}
+        movies={filteredMovies}
+        onAddToWatchlist={handleAddToWatchlist}
+      />
 
-          {filteredMovies.length > 0 ? (
-            <ul>
-              {filteredMovies.map((movie) => (
-                <li key={movie.id} className="movie-card">
-                  <h3>{movie.title}</h3>
-                  <p>{movie.year}</p>
-                  <p>{movie.overview}</p>
-
-                  <button
-                    type="button"
-                    onClick={() => handleAddToWatchlist(movie)}
-                  >
-                    Add to Watchlist
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No movies found.</p>
-          )}
-        </section>
-      )}
-
-      <section className="watchlist-section">
-        <h2>Watchlist</h2>
-        <p>{watchlist.length} saved movies</p>
-
-        <button
-          type="button"
-          onClick={handlePickRandomMovie}
-          disabled={watchlist.length === 0}
-        >
-          Pick Random Movie
-        </button>
-
-        {watchlist.length > 0 ? (
-          <ul>
-            {watchlist.map((movie) => (
-              <li key={movie.id} className="movie-card">
-                <h3>{movie.title}</h3>
-                <p>{movie.year}</p>
-
-                <button
-                  type="button"
-                  onClick={() => handleRemoveFromWatchlist(movie.id)}
-                >
-                  Remove
-                </button>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>Your watchlist is empty.</p>
-        )}
-
-        {selectedMovie && (
-          <div className="selected-movie">
-            <h3>Tonight's pick</h3>
-            <p>{selectedMovie.title}</p>
-          </div>
-        )}
-      </section>
+      <Watchlist
+        watchlist={watchlist}
+        selectedMovie={selectedMovie}
+        onRemoveFromWatchlist={handleRemoveFromWatchlist}
+        onPickRandomMovie={handlePickRandomMovie}
+      />
     </main>
   );
 }
