@@ -79,6 +79,7 @@ function App() {
       <MovieList
         submittedSearch={submittedSearch}
         movies={filteredMovies}
+        watchlist={watchlist}
         onAddToWatchlist={handleAddToWatchlist}
       />
 

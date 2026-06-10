@@ -55,7 +55,22 @@ button:disabled {
   cursor: not-allowed;
 }
 
-ul {
+/* ul {
+  padding: 18px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+} */
+ ul {
+  display: grid;
+  gap: 16px;
+  padding: 0;
+  list-style: none;
+}
+
+.movie-card {
+  display: grid;
+  gap: 8px;
   padding: 18px;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
@@ -73,6 +88,31 @@ ul {
 
 .movie-card button {
   margin-top: 8px;
+}
+.remove-button {
+  justify-self: end;
+  padding: 8px 12px;
+  background: #dc2626;
+  font-size: 14px;
+}
+
+.remove-button:hover {
+  background: #b91c1c;
+}
+
+.add-to-watchlist-button {
+  justify-self: end;
+  padding: 8px 12px;
+  background: #2563eb;
+  font-size: 14px;
+}
+
+.add-to-watchlist-button:hover {
+  background: #1d4ed8;
+}
+.add-to-watchlist-button:disabled:hover {
+  background: #94a3b8;
+  cursor: not-allowed;
 }
 
 header {

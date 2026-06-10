@@ -1,6 +1,6 @@
 import MovieCard from "./MovieCard.jsx";
 
-function MovieList({ submittedSearch, movies, onAddToWatchlist }) {
+function MovieList({ submittedSearch, movies, watchlist, onAddToWatchlist }) {
   if (!submittedSearch) {
     return null; // Don't render anything if no search has been submitted
   }
@@ -11,13 +11,24 @@ function MovieList({ submittedSearch, movies, onAddToWatchlist }) {
 
       {movies.length > 0 ? ( // Check if there are movies to display
         <ul>
-          {movies.map((movie) => (
-            <MovieCard key={movie.id} movie={movie}>
-                <button type="button" onClick={() => onAddToWatchlist(movie)}>
-                  Add to Watchlist
+          {movies.map((movie) => {
+            const isSaved = watchlist.some((savedMovie) => {
+              return savedMovie.id === movie.id;
+            });
+
+            return (
+              <MovieCard key={movie.id} movie={movie}>
+                <button
+                className="add-to-watchlist-button"
+                  type="button"
+                  onClick={() => onAddToWatchlist(movie)}
+                  disabled={isSaved}
+                >
+                  {isSaved ? "Saved" : "Add to Watchlist"}
                 </button>
-            </MovieCard>
-          ))}
+              </MovieCard>
+            );
+          })}
         </ul>
       ) : (
         <p>No movies found.</p>

@@ -24,6 +24,7 @@ function Watchlist({
           {watchlist.map((movie) => (
             <MovieCard key={movie.id} movie={movie}>
               <button
+              className="remove-button"
                 type="button"
                 onClick={() => onRemoveFromWatchlist(movie.id)}
               >
