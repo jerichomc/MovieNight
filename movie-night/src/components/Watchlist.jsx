@@ -1,3 +1,5 @@
+import MovieCard from "./MovieCard.jsx";
+
 function Watchlist({
   watchlist,
   selectedMovie,
@@ -20,17 +22,14 @@ function Watchlist({
       {watchlist.length > 0 ? (
         <ul>
           {watchlist.map((movie) => (
-            <li key={movie.id} className="movie-card">
-              <h3>{movie.title}</h3>
-              <p>{movie.year}</p>
-
+            <MovieCard key={movie.id} movie={movie}>
               <button
                 type="button"
                 onClick={() => onRemoveFromWatchlist(movie.id)}
               >
                 Remove
               </button>
-            </li>
+            </MovieCard>
           ))}
         </ul>
       ) : (

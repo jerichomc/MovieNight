@@ -1,3 +1,5 @@
+import MovieCard from "./MovieCard.jsx";
+
 function MovieList({ submittedSearch, movies, onAddToWatchlist }) {
   if (!submittedSearch) {
     return null; // Don't render anything if no search has been submitted
@@ -10,15 +12,11 @@ function MovieList({ submittedSearch, movies, onAddToWatchlist }) {
       {movies.length > 0 ? ( // Check if there are movies to display
         <ul>
           {movies.map((movie) => (
-            <li key={movie.id} className="movie-card">
-              <h3>{movie.title}</h3>
-              <p>{movie.year}</p>
-              <p>{movie.overview}</p>
-
-              <button type="button" onClick={() => onAddToWatchlist(movie)}>
-                Add to Watchlist
-              </button>
-            </li>
+            <MovieCard key={movie.id} movie={movie}>
+                <button type="button" onClick={() => onAddToWatchlist(movie)}>
+                  Add to Watchlist
+                </button>
+            </MovieCard>
           ))}
         </ul>
       ) : (
