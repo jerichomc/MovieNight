@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { searchMovies} from "./api/tmdb.js"; // Import the searchMovies function from the TMDB API module
 import SearchForm from "./components/SearchForm.jsx";
 import MovieList from "./components/MovieList.jsx";
 import Watchlist from "./components/Watchlist.jsx";
+
 
 const mockMovies = [
   {
@@ -27,23 +29,36 @@ const mockMovies = [
   },
 ];
 
-function searchMovies(query) { //
-  return mockMovies.filter((movie) => { // Filter movies based on the search query
-    return movie.title.toLowerCase().includes(query.toLowerCase()); // Check if the movie title includes the search query (case-insensitive)
-  });
-}
-
 function App() {
+  const [movies, setMovies] = useState([]); // State to hold the list of movies returned from the search
+  const [isLoading, setIsLoading] = useState(false); // State to track if the app is currently loading data from the API
+  const [errorMessage, setErrorMessage] = useState(""); // State to hold any error messages from the API
   const [searchTerm, setSearchTerm] = useState("");
   const [submittedSearch, setSubmittedSearch] = useState("");
   const [watchlist, setWatchlist] = useState([]);
   const [selectedMovie, setSelectedMovie] = useState(null);
-  const filteredMovies = searchMovies(submittedSearch); // Get the list of movies that match the submitted search term
   
-
-  function handleSearch(event) {
+  async function handleSearch(event) {
     event.preventDefault(); // Prevent the default form submission behavior
-    setSubmittedSearch(searchTerm); // Update the submitted search term to trigger the movie list update
+
+    if(!searchTerm.trim()){
+      return; // Don't perform the search if the search term is empty or only contains whitespace
+    }
+
+    setSubmittedSearch(searchTerm); // Update the submitted search term state to trigger the MovieList component to render the search results
+    setIsLoading(true); // Set loading state to true while fetching data from the API
+    setErrorMessage(""); // Clear any previous error messages
+
+    try {
+      const results = await searchMovies(searchTerm); // Call the searchMovies function to fetch movies from the TMDB API based on the search term
+      console.log(results)
+      setMovies(results); // Update the movies state with the results from the API
+    } catch (error) {
+      console.log(error);
+      setErrorMessage("Something went wrong while fetching movies."); // If there's an error during the API call, update the error message state with the error message
+    } finally {
+      setIsLoading(false); // Set loading state to false after the API call is complete, regardless of success or failure
+    }
   }
 
   function handleAddToWatchlist(movie) {
@@ -82,7 +97,7 @@ function App() {
 
       <MovieList
         submittedSearch={submittedSearch}
-        movies={filteredMovies}
+        movies={movies}
         watchlist={watchlist}
         onAddToWatchlist={handleAddToWatchlist}
       />
