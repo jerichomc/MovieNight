@@ -27,15 +27,19 @@ const mockMovies = [
   },
 ];
 
+function searchMovies(query) { //
+  return mockMovies.filter((movie) => { // Filter movies based on the search query
+    return movie.title.toLowerCase().includes(query.toLowerCase()); // Check if the movie title includes the search query (case-insensitive)
+  });
+}
+
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [submittedSearch, setSubmittedSearch] = useState("");
   const [watchlist, setWatchlist] = useState([]);
   const [selectedMovie, setSelectedMovie] = useState(null);
-
-  const filteredMovies = mockMovies.filter((movie) => {
-    return movie.title.toLowerCase().includes(submittedSearch.toLowerCase());
-  });
+  const filteredMovies = searchMovies(submittedSearch); // Get the list of movies that match the submitted search term
+  
 
   function handleSearch(event) {
     event.preventDefault(); // Prevent the default form submission behavior

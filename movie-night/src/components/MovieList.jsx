@@ -11,12 +11,12 @@ function MovieList({ submittedSearch, movies, watchlist, onAddToWatchlist }) {
 
       {movies.length > 0 ? ( // Check if there are movies to display
         <ul>
-          {movies.map((movie) => {
+          {movies.map((movie) => { // Iterate over the list of movies and render a MovieCard for each one
             const isSaved = watchlist.some((savedMovie) => {
               return savedMovie.id === movie.id;
             });
 
-            return (
+            return ( // Render a MovieCard for each movie, passing the movie data and a button to add to the watchlist
               <MovieCard key={movie.id} movie={movie}>
                 <button
                 className="add-to-watchlist-button"
