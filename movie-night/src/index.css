@@ -70,11 +70,70 @@ button:disabled {
 
 .movie-card {
   display: grid;
-  gap: 8px;
+  grid-template-columns: 120px 1fr;
+  gap: 18px;
+  align-items: start;
   padding: 18px;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   background: white;
+}
+
+.movie-card img,
+.poster-placeholder {
+  width: 120px;
+  aspect-ratio: 2 / 3;
+  border-radius: 6px;
+  object-fit: cover;
+  background: #e5e7eb;
+}
+
+.poster-placeholder {
+  display: grid;
+  place-items: center;
+  padding: 8px;
+  color: #64748b;
+  font-size: 14px;
+  text-align: center;
+}
+
+.movie-card-content {
+  display: grid;
+  gap: 8px;
+}
+
+.movie-card-content h3,
+.movie-card-content p {
+  margin: 0;
+}
+
+.movie-card-content p {
+  line-height: 1.5;
+}
+.remove-button {
+  justify-self: end;
+  padding: 8px 12px;
+  background: #dc2626;
+  font-size: 14px;
+}
+.remove-button:hover {
+  background: #b91c1c;
+}
+
+.movie-card-content button {
+  justify-self: start;
+  margin-top: 8px;
+}
+
+.remove-button {
+  justify-self: end;
+  padding: 8px 12px;
+  background: #dc2626;
+  font-size: 14px;
+}
+
+.remove-button:hover {
+  background: #b91c1c;
 }
 
 .movie-card h3 {
@@ -159,5 +218,15 @@ section {
 
   button {
     width: 100%;
+  }
+
+  .movie-card{
+    grid-template-columns: 1fr;
+  }
+
+  .movie-card img,
+  .poster-placeholder {
+    width: 100%;
+    max-width: 180px;
   }
 }

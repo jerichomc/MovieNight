@@ -1,14 +1,41 @@
-function MovieCard({ movie, children }) {
+function MovieCard({movie, children}) { // The MovieCard component takes in a movie object and children as props
+    const posterUrl = movie.poster_path ? `https://image.tmdb.org/t/p/w342${movie.poster_path}` : null; // Construct the poster URL using the movie's poster_path, or set it to null if poster_path is not available
+
+    const releaseYear = movie.release_date ? movie.release_date.slice(0, 4) : "NA"; // Extract the release year from the movie's release_date, or set it to "N/A" if release_date is not available
+
+    const rating = movie.vote_average ? movie.vote_average.toFixed(1) : "Not Rated";
+
+    function getRatingEmoji(rating) {
+        if (rating >= 7) {
+            return "🧨"; // Return a star emoji for highly rated movies
+        }
+        if (rating >= 5) {
+            return "😐"; // Return a thumbs up emoji for moderately rated movies
+        }
+        return "🤢"
+    }
+
+    const ratingEmoji = movie.vote_average ? getRatingEmoji(movie.vote_average) : ""; // Get the appropriate emoji based on the movie's rating, or set it to an empty string if vote_average is not available
+
     return (
         <li className="movie-card">
-            <h3>{movie.title}</h3>
-            <p>{movie.year}</p>
+            {posterUrl ? (
+                <img src={posterUrl} alt={`${movie.title} poster`} />
+            ) : (
+                <div className="no-poster">No Poster Available</div>
+            )}
 
-            {movie.overview && <p>{movie.overview}</p>}
+            <div className="movie-card-content">
+                <h3>{movie.title}</h3>
+                <p>{releaseYear}</p>
+                <p>Rating: {rating} {ratingEmoji}</p>
 
-            {children} 
+                {movie.overview && <p>{movie.overview}</p>} {/* Conditionally render the movie overview if it exists */}
+
+                {children} {/* Render any children passed to the MovieCard component, such as buttons to add to watchlist or remove from watchlist */}
+            </div>
         </li>
-    )
+    );
 }
-//children will be whatever is passed in as the content of the component like a button or other elements
+
 export default MovieCard;
