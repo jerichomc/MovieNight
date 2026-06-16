@@ -4,31 +4,6 @@ import SearchForm from "./components/SearchForm.jsx";
 import MovieList from "./components/MovieList.jsx";
 import Watchlist from "./components/Watchlist.jsx";
 
-
-const mockMovies = [
-  {
-    id: 1,
-    title: "Spider-Man: Into the Spider-Verse",
-    year: "2018",
-    overview:
-      "Teen Miles Morales becomes Spider-Man and discovers a multiverse of Spider-heroes.",
-  },
-  {
-    id: 2,
-    title: "The Batman",
-    year: "2022",
-    overview:
-      "Batman investigates corruption in Gotham while hunting a mysterious killer.",
-  },
-  {
-    id: 3,
-    title: "Everything Everywhere All at Once",
-    year: "2022",
-    overview:
-      "A laundromat owner is pulled into a wild multiverse adventure to save existence.",
-  },
-];
-
 function App() {
   const [movies, setMovies] = useState([]); // State to hold the list of movies returned from the search
   const [isLoading, setIsLoading] = useState(false); // State to track if the app is currently loading data from the API
@@ -37,6 +12,7 @@ function App() {
   const [submittedSearch, setSubmittedSearch] = useState("");
   const [watchlist, setWatchlist] = useState([]);
   const [selectedMovie, setSelectedMovie] = useState(null);
+  const [sortBy, setSortBy] = useState("popularity"); // State to track the current sorting option for the movie list, defaulting to sorting by popularity in descending order
   
   async function handleSearch(event) {
     event.preventDefault(); // Prevent the default form submission behavior
@@ -80,6 +56,19 @@ function App() {
     setSelectedMovie(randomMovie);
   }
 
+  const sortedMovies = [...movies].sort((a, b) => {
+    if (sortBy === "popularity") {
+      return b.popularity - a.popularity; // Sort movies by popularity in descending order
+    }
+    if (sortBy === "rating") {
+      return b.vote_average - a.vote_average; // Sort movies by rating in descending order
+    }
+    if (sortBy === "title") {
+      return a.title.localeCompare(b.title); // Sort movies by title in alphabetical order
+    }
+    return 0; // If no sorting option is selected, return 0 to keep the original order
+  })
+
   return (
     <main>
       <header>
@@ -97,8 +86,10 @@ function App() {
 
       <MovieList
         submittedSearch={submittedSearch}
-        movies={movies}
+        movies={sortedMovies}
         watchlist={watchlist}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
         onAddToWatchlist={handleAddToWatchlist}
       />
 
