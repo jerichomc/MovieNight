@@ -5,6 +5,16 @@ function MovieList({ submittedSearch, movies, watchlist, sortBy, setSortBy, onAd
     return null; // Don't render anything if no search has been submitted
   }
 
+    let resultMessage = "";
+
+if (movies.length === 0) {
+  resultMessage = "";
+} else if (movies.length === 1) {
+  resultMessage = "1 movie found.";
+} else {
+  resultMessage = `${movies.length} movies found.`;
+}
+
   return (
     <section className="results-section">
       <h2>Search Results for "{submittedSearch}"</h2>
@@ -21,6 +31,7 @@ function MovieList({ submittedSearch, movies, watchlist, sortBy, setSortBy, onAd
           <option value="title">Title</option>
         </select>
       </div>
+      {resultMessage && <p className="result-message">{resultMessage}</p>} {/* Conditionally render the result message if it exists */}
 
       {movies.length > 0 ? ( // Check if there are movies to display
         <ul>

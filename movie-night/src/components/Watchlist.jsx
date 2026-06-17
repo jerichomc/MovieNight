@@ -6,10 +6,22 @@ function Watchlist({
   onRemoveFromWatchlist,
   onPickRandomMovie,
 }) {
+
+  let watchlistMessage = "";
+  if (watchlist.length <= 0) {
+    watchlistMessage = "Your watchlist is empty.";
+  } else if (watchlist.length === 1) {
+    watchlistMessage = "1 saved movie, add more for a better random selection!";
+  } else {
+    watchlistMessage = `${watchlist.length} saved movies, ready to watch?`;
+  }
+
+  
+
   return (
     <section className="watchlist-section">
       <h2>Watchlist</h2>
-      <p>{watchlist.length} saved movies</p>
+      <p>{watchlistMessage}</p>
 
       <button
         type="button"
@@ -34,7 +46,7 @@ function Watchlist({
           ))}
         </ul>
       ) : (
-        <p>Your watchlist is empty.</p>
+        <p>{watchlistMessage}</p>
       )}
 
       {selectedMovie && ( // Conditionally render the selected movie if it exists

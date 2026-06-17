@@ -31,6 +31,7 @@ function App() {
       const results = await searchMovies(trimmedSearch); // Call the searchMovies function to fetch movies from the TMDB API based on the search term
       setMovies(results); // Update the movies state with the results from the API
     } catch (error) {
+      console.error(error); // Log any errors to the console for debugging purposes
       setErrorMessage("Something went wrong while fetching movies."); // If there's an error during the API call, update the error message state with the error message
     } finally {
       setIsLoading(false); // Set loading state to false after the API call is complete, regardless of success or failure

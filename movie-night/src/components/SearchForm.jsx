@@ -1,4 +1,7 @@
 function SearchForm({ searchTerm, setSearchTerm, onSearch, clearSearch }) {
+
+    
+
     return (
         <section className="search-section">
             <h2>Search Movies</h2>
