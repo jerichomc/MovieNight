@@ -210,6 +210,22 @@ section {
   font-weight: 700;
 }
 
+.status-message {
+  margin-top: 24px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.error-message {
+  margin-top: 24px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
 
 @media (max-width: 600px) {
   form {

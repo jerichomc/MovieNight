@@ -46,7 +46,7 @@ function MovieList({ submittedSearch, movies, watchlist, sortBy, setSortBy, onAd
           })}
         </ul>
       ) : (
-        <p>No movies found.</p>
+        <p>No movies found for "{submittedSearch}".</p>
       )}
     </section>
   );

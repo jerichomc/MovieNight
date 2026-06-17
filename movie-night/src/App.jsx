@@ -16,17 +16,19 @@ function App() {
   
   async function handleSearch(event) {
     event.preventDefault(); // Prevent the default form submission behavior
+    const trimmedSearch = searchTerm.trim(); // Trim whitespace from the search term before sending it to the API
 
-    if(!searchTerm.trim()){
+    if(!trimmedSearch){
       return; // Don't perform the search if the search term is empty or only contains whitespace
     }
 
-    setSubmittedSearch(searchTerm); // Update the submitted search term state to trigger the MovieList component to render the search results
+    setSubmittedSearch(trimmedSearch); // Update the submitted search term state to trigger the MovieList component to render the search results
     setIsLoading(true); // Set loading state to true while fetching data from the API
     setErrorMessage(""); // Clear any previous error messages
+    setMovies([]); // Clear any previous search results
 
     try {
-      const results = await searchMovies(searchTerm); // Call the searchMovies function to fetch movies from the TMDB API based on the search term
+      const results = await searchMovies(trimmedSearch); // Call the searchMovies function to fetch movies from the TMDB API based on the search term
       setMovies(results); // Update the movies state with the results from the API
     } catch (error) {
       setErrorMessage("Something went wrong while fetching movies."); // If there's an error during the API call, update the error message state with the error message
@@ -55,6 +57,12 @@ function App() {
 
     setSelectedMovie(randomMovie);
   }
+  function clearSearch() {
+    setSubmittedSearch("");
+    setMovies([]);
+    setErrorMessage("");
+    setSearchTerm("");
+  }
 
   const sortedMovies = [...movies].sort((a, b) => {
     if (sortBy === "popularity") {
@@ -80,18 +88,21 @@ function App() {
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         onSearch={handleSearch}
+        clearSearch={clearSearch}
       />
-      {isLoading && <p>Loading...</p>}
-      {errorMessage && <p className="error">{errorMessage}</p>}
+      {isLoading && <p className="status-message">Loading...</p>}
+      {errorMessage && <p className="error-message">{errorMessage}</p>}
 
-      <MovieList
-        submittedSearch={submittedSearch}
-        movies={sortedMovies}
-        watchlist={watchlist}
-        sortBy={sortBy}
-        setSortBy={setSortBy}
-        onAddToWatchlist={handleAddToWatchlist}
-      />
+      {!isLoading && (
+        <MovieList
+          submittedSearch={submittedSearch}
+          movies={sortedMovies}
+          watchlist={watchlist}
+          sortBy={sortBy}
+          setSortBy={setSortBy}
+          onAddToWatchlist={handleAddToWatchlist}
+        />
+      )}
 
       <Watchlist
         watchlist={watchlist}
