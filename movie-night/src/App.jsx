@@ -13,7 +13,11 @@ function App() {
   const [watchlist, setWatchlist] = useState([]);
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [sortBy, setSortBy] = useState("popularity"); // State to track the current sorting option for the movie list, defaulting to sorting by popularity in descending order
-  
+  const [currentPage, setCurrentPage] = useState(1); // State to track the current page of search results for pagination purposes
+  const [totalPages, setTotalPages] = useState(1); // State to track the total number of pages of search results returned from the API for pagination purposes
+
+
+
   async function handleSearch(event) {
     event.preventDefault(); // Prevent the default form submission behavior
     const trimmedSearch = searchTerm.trim(); // Trim whitespace from the search term before sending it to the API
@@ -28,8 +32,27 @@ function App() {
     setMovies([]); // Clear any previous search results
 
     try {
-      const results = await searchMovies(trimmedSearch); // Call the searchMovies function to fetch movies from the TMDB API based on the search term
-      setMovies(results); // Update the movies state with the results from the API
+      const data = await searchMovies(trimmedSearch, 1); // Call the searchMovies function from the TMDB API module with the trimmed search term and page number 1 for pagination
+      setMovies(data.results);
+      setTotalPages(data.totalPages); // Update the total pages state with the total number of pages returned from the API
+      setCurrentPage(1); // Reset the current page to 1 when a new search is performed
+    } catch (error) {
+      console.error(error); // Log any errors to the console for debugging purposes
+      setErrorMessage("Something went wrong while fetching movies."); // If there's an error during the API call, update the error message state with the error message
+    } finally {
+      setIsLoading(false); // Set loading state to false after the API call is complete, regardless of success or failure
+    }
+  }
+
+  async function handlePageChange(nextPage) {
+    setIsLoading(true); // Set loading state to true while fetching data from the API
+    setErrorMessage(""); // Clear any previous error messages
+
+    try{
+      const data = await searchMovies(submittedSearch, nextPage); // Call the searchMovies function from the TMDB API module with the current submitted search term and the next page number for pagination
+      setMovies(data.results);
+      setTotalPages(data.totalPages); // Update the total pages state with the total number of pages returned from the API
+      setCurrentPage(nextPage); // Update the current page state to the next page number
     } catch (error) {
       console.error(error); // Log any errors to the console for debugging purposes
       setErrorMessage("Something went wrong while fetching movies."); // If there's an error during the API call, update the error message state with the error message
@@ -101,6 +124,9 @@ function App() {
           watchlist={watchlist}
           sortBy={sortBy}
           setSortBy={setSortBy}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          handleChangePage={handlePageChange}
           onAddToWatchlist={handleAddToWatchlist}
         />
       )}

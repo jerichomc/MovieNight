@@ -1,6 +1,16 @@
 import MovieCard from "./MovieCard.jsx";
 
-function MovieList({ submittedSearch, movies, watchlist, sortBy, setSortBy, onAddToWatchlist }) {
+function MovieList({
+  submittedSearch,
+  movies,
+  watchlist,
+  sortBy,
+  setSortBy,
+  currentPage,
+  totalPages,
+  handleChangePage,
+  onAddToWatchlist,
+}) {
   if (!submittedSearch) {
     return null; // Don't render anything if no search has been submitted
   }
@@ -59,6 +69,29 @@ if (movies.length === 0) {
       ) : (
         <p>No movies found for "{submittedSearch}".</p>
       )}
+      {movies.length > 0 && (
+  <div className="pagination-controls">
+    <button
+      type="button"
+      onClick={() => handleChangePage(currentPage - 1)}
+      disabled={currentPage === 1}
+    >
+      Previous
+    </button>
+
+    <span>
+      Page {currentPage} of {totalPages}
+    </span>
+
+    <button
+      type="button"
+      onClick={() => handleChangePage(currentPage + 1)}
+      disabled={currentPage === totalPages}
+    >
+      Next
+    </button>
+  </div>
+)}
     </section>
   );
 }
