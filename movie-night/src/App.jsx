@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { searchMovies } from "./api/tmdb.js"; // Import the searchMovies function from the TMDB API module
 import SearchForm from "./components/SearchForm.jsx";
 import MovieList from "./components/MovieList.jsx";
@@ -10,11 +10,25 @@ function App() {
   const [errorMessage, setErrorMessage] = useState(""); // State to hold any error messages from the API
   const [searchTerm, setSearchTerm] = useState("");
   const [submittedSearch, setSubmittedSearch] = useState("");
-  const [watchlist, setWatchlist] = useState([]);
+  const [watchlist, setWatchlist] = useState(() => {
+    const savedWatchlist = localStorage.getItem("movieNightWatchlist");
+
+    if (savedWatchlist) {
+      return JSON.parse(savedWatchlist);
+    }
+
+    return [];
+  });
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [sortBy, setSortBy] = useState("popularity"); // State to track the current sorting option for the movie list, defaulting to sorting by popularity in descending order
   const [currentPage, setCurrentPage] = useState(1); // State to track the current page of search results for pagination purposes
   const [totalPages, setTotalPages] = useState(1); // State to track the total number of pages of search results returned from the API for pagination purposes
+
+  useEffect(() => {
+    localStorage.setItem("movieNightWatchlist", JSON.stringify(watchlist));
+  }, [watchlist]);
+
+
 
   async function handleSearch(event) {
     event.preventDefault(); // Prevent the default form submission behavior
