@@ -5,6 +5,7 @@ function Watchlist({
   selectedMovie,
   onRemoveFromWatchlist,
   onPickRandomMovie,
+  onClearSelectedMovie,
 }) {
 
   let watchlistMessage = "";
@@ -52,7 +53,11 @@ function Watchlist({
       {selectedMovie && ( // Conditionally render the selected movie if it exists
         <div className="selected-movie">
           <h3>Tonight's pick</h3>
-          <p>{selectedMovie.title}</p> 
+          <MovieCard movie={selectedMovie}>
+            <button type="button" onClick={onClearSelectedMovie}>
+              Clear 
+            </button>
+          </MovieCard>
         </div>
       )}
     </section>

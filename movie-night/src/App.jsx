@@ -117,6 +117,10 @@ function App() {
     setSearchTerm("");
   }
 
+  function handleClearSelectedMovie() {
+    setSelectedMovie(null);
+  }
+
   const sortedMovies = [...movies].sort((a, b) => {
     if (sortBy === "popularity") {
       return b.popularity - a.popularity; // Sort movies by popularity in descending order
@@ -166,6 +170,7 @@ function App() {
         selectedMovie={selectedMovie}
         onRemoveFromWatchlist={handleRemoveFromWatchlist}
         onPickRandomMovie={handlePickRandomMovie}
+        onClearSelectedMovie={handleClearSelectedMovie}
       />
     </main>
   );
