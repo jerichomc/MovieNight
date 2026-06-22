@@ -3,6 +3,11 @@ import { searchMovies } from "./api/tmdb.js"; // Import the searchMovies functio
 import SearchForm from "./components/SearchForm.jsx";
 import MovieList from "./components/MovieList.jsx";
 import Watchlist from "./components/Watchlist.jsx";
+import Navbar from "./components/Navbar.jsx";
+import { Routes, Route } from "react-router-dom";
+import SearchPage from "./pages/SearchPage.jsx";
+import WatchlistPage from "./pages/WatchlistPage.jsx";
+import PlannerPage from "./pages/PlannerPage.jsx";
 
 function App() {
   const [movies, setMovies] = useState([]); // State to hold the list of movies returned from the search
@@ -27,8 +32,6 @@ function App() {
   useEffect(() => {
     localStorage.setItem("movieNightWatchlist", JSON.stringify(watchlist));
   }, [watchlist]);
-
-
 
   async function handleSearch(event) {
     event.preventDefault(); // Prevent the default form submission behavior
@@ -135,44 +138,52 @@ function App() {
   });
 
   return (
-    <main>
-      <header>
-        <h1>Movie Night</h1>
-        <p>Plan movies, snacks, guests, and watch nights.</p>
-      </header>
+    <>
+      <Navbar />
 
-      <SearchForm
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        onSearch={handleSearch}
-        clearSearch={clearSearch}
-      />
-      {isLoading && <p className="status-message">Loading...</p>}
-      {errorMessage && <p className="error-message">{errorMessage}</p>}
+      <main>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <SearchPage
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                onSearch={handleSearch}
+                clearSearch={clearSearch}
+                isLoading={isLoading}
+                errorMessage={errorMessage}
+                submittedSearch={submittedSearch}
+                movies={sortedMovies}
+                watchlist={watchlist}
+                sortBy={sortBy}
+                setSortBy={setSortBy}
+                currentPage={currentPage}
+                totalPages={totalPages}
+                handleChangePage={handlePageChange}
+                handlePageSelect={handlePageSelect}
+                onAddToWatchlist={handleAddToWatchlist}
+              />
+            }
+          />
 
-      {!isLoading && (
-        <MovieList
-          submittedSearch={submittedSearch}
-          movies={sortedMovies}
-          watchlist={watchlist}
-          sortBy={sortBy}
-          setSortBy={setSortBy}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          handleChangePage={handlePageChange}
-          handlePageSelect={handlePageSelect}
-          onAddToWatchlist={handleAddToWatchlist}
-        />
-      )}
+          <Route
+            path="/watchlist"
+            element={
+              <WatchlistPage
+                watchlist={watchlist}
+                selectedMovie={selectedMovie}
+                onRemoveFromWatchlist={handleRemoveFromWatchlist}
+                onPickRandomMovie={handlePickRandomMovie}
+                onClearSelectedMovie={handleClearSelectedMovie}
+              />
+            }
+          />
 
-      <Watchlist
-        watchlist={watchlist}
-        selectedMovie={selectedMovie}
-        onRemoveFromWatchlist={handleRemoveFromWatchlist}
-        onPickRandomMovie={handlePickRandomMovie}
-        onClearSelectedMovie={handleClearSelectedMovie}
-      />
-    </main>
+          <Route path="/planner" element={<PlannerPage />} />
+        </Routes>
+      </main>
+    </>
   );
 }
 

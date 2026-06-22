@@ -226,6 +226,44 @@ section {
   color: #b91c1c;
 }
 
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 32px;
+  margin-bottom: 0;
+  background: linear-gradient(90deg, #111827, #2563eb);
+  color: white;
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.18);
+}
+
+.navbar-logo {
+  font-weight: 800;
+  color: white;
+  text-decoration: none;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 18px;
+}
+
+.navbar-links a {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+.navbar-links a:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
 
 @media (max-width: 600px) {
   form {
