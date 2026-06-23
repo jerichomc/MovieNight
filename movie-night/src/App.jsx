@@ -25,6 +25,12 @@ function App() {
   const [sortBy, setSortBy] = useState("popularity"); // State to track the current sorting option for the movie list, defaulting to sorting by popularity in descending order
   const [currentPage, setCurrentPage] = useState(1); // State to track the current page of search results for pagination purposes
   const [totalPages, setTotalPages] = useState(1); // State to track the total number of pages of search results returned from the API for pagination purposes
+  const [movieNight, setMovieNight] = useState({
+    title: "",
+    date: "",
+    location: "",
+    notes: "",
+  });
 
   useEffect(() => {
     localStorage.setItem("movieNightWatchlist", JSON.stringify(watchlist));
@@ -121,6 +127,15 @@ function App() {
     setSelectedMovie(null);
   }
 
+  function handleMovieNightChange(event) {
+    const { name, value } = event.target;
+
+    setMovieNight({
+      ...movieNight,
+      [name]: value,
+    });
+  }
+
   const sortedMovies = [...movies].sort((a, b) => {
     if (sortBy === "popularity") {
       return b.popularity - a.popularity; // Sort movies by popularity in descending order
@@ -177,7 +192,8 @@ function App() {
             }
           />
 
-          <Route path="/planner" element={<PlannerPage />} />
+          <Route path="/planner" element={<PlannerPage movieNight={movieNight}
+          onMovieNightChange={handleMovieNightChange}/>} />
         </Routes>
       </main>
     </>
