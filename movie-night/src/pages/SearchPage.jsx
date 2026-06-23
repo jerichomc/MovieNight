@@ -21,6 +21,10 @@ function SearchPage({
 }) {
   return (
     <>
+    <header className="page-header">
+      <h1>Search Movies</h1>
+      <p>Find movies and save them to your watchlist!</p>
+    </header>
       <SearchForm
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}

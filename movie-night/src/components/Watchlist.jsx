@@ -20,9 +20,19 @@ function Watchlist({
   
 
   return (
+    
     <section className="watchlist-section">
-      <h2>Watchlist</h2>
       <p>{watchlistMessage}</p>
+      {selectedMovie && ( // Conditionally render the selected movie if it exists
+        <div className="selected-movie">
+          <h3>Tonight's pick</h3>
+          <MovieCard movie={selectedMovie}>
+            <button type="button" onClick={onClearSelectedMovie}>
+              Clear 
+            </button>
+          </MovieCard>
+        </div>
+      )}
 
       <button
         type="button"
@@ -50,16 +60,7 @@ function Watchlist({
         <p>{watchlistMessage}</p>
       )}
 
-      {selectedMovie && ( // Conditionally render the selected movie if it exists
-        <div className="selected-movie">
-          <h3>Tonight's pick</h3>
-          <MovieCard movie={selectedMovie}>
-            <button type="button" onClick={onClearSelectedMovie}>
-              Clear 
-            </button>
-          </MovieCard>
-        </div>
-      )}
+      
     </section>
   );
 }

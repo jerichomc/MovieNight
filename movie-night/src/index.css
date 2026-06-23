@@ -262,6 +262,26 @@ section {
 .navbar-links a:hover {
   opacity: 1;
   text-decoration: underline;
+  text-underline-offset: 6px;
+}
+
+.navbar-links a.active {
+  opacity: 1;
+  text-decoration: underline;
+  text-underline-offset: 6px;
+}
+
+.page-header {
+  margin-bottom: 32px;
+}
+
+.page-header {
+  margin-bottom: 8px;
+}
+
+.page-header p {
+  margin-top: 0;
+  color:#64748b
 }
 
 

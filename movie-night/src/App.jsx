@@ -1,8 +1,5 @@
 import { useState, useEffect } from "react";
 import { searchMovies } from "./api/tmdb.js"; // Import the searchMovies function from the TMDB API module
-import SearchForm from "./components/SearchForm.jsx";
-import MovieList from "./components/MovieList.jsx";
-import Watchlist from "./components/Watchlist.jsx";
 import Navbar from "./components/Navbar.jsx";
 import { Routes, Route } from "react-router-dom";
 import SearchPage from "./pages/SearchPage.jsx";

@@ -7,10 +7,10 @@ function MovieCard({movie, children}) { // The MovieCard component takes in a mo
 
     function getRatingEmoji(rating) {
         if (rating >= 7) {
-            return "🧨"; // Return a star emoji for highly rated movies
+            return "🧨"; // Return a dynamite emoji for highly rated movies
         }
         if (rating >= 5) {
-            return "😐"; // Return a thumbs up emoji for moderately rated movies
+            return "😐"; // Return a meh emoji for moderately rated movies
         }
         return "🤢"
     }
