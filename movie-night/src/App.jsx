@@ -31,6 +31,7 @@ function App() {
     location: "",
     notes: "",
   });
+  const [movieNights, setMovieNights] = useState([]);
 
   useEffect(() => {
     localStorage.setItem("movieNightWatchlist", JSON.stringify(watchlist));
@@ -149,6 +150,34 @@ function App() {
     return 0; // If no sorting option is selected, return 0 to keep the original order
   });
 
+  function handleCreateMovieNight(event) {
+  event.preventDefault();
+
+  if (!movieNight.title.trim()) {
+    return;
+  }
+
+  const newMovieNight = {
+    id: crypto.randomUUID(),
+    title: movieNight.title.trim(),
+    date: movieNight.date,
+    location: movieNight.location.trim(),
+    notes: movieNight.notes.trim(),
+    movies: [],
+    guests: [],
+    snacks: [],
+  };
+
+  setMovieNights([...movieNights, newMovieNight]);
+
+  setMovieNight({
+    title: "",
+    date: "",
+    location: "",
+    notes: "",
+  });
+}
+
   return (
     <>
       <Navbar />
@@ -193,7 +222,9 @@ function App() {
           />
 
           <Route path="/planner" element={<PlannerPage movieNight={movieNight}
-          onMovieNightChange={handleMovieNightChange}/>} />
+          movieNights={movieNights}
+          onMovieNightChange={handleMovieNightChange}
+          onCreateMovieNight={handleCreateMovieNight}/>} />
         </Routes>
       </main>
     </>
