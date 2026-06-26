@@ -32,6 +32,11 @@ function App() {
     notes: "",
   });
   const [movieNights, setMovieNights] = useState([]);
+  const [selectedMovieNightId, setSelectedMovieNightId] = useState(null);
+
+  const selectedMovieNight = movieNights.find((night) => {
+    return night.id === selectedMovieNightId;
+  })
 
   useEffect(() => {
     localStorage.setItem("movieNightWatchlist", JSON.stringify(watchlist));
@@ -178,6 +183,18 @@ function App() {
   });
 }
 
+  function handleDeleteMovieNight(movieNightId){
+    setMovieNights(movieNights.filter((night) => night.id !== movieNightId));
+  }
+
+  function handleSelectMovieNight(movieNightId){
+    if (selectedMovieNightId === movieNightId){
+      setSelectedMovieNightId(null)
+    } else {
+      setSelectedMovieNightId(movieNightId)
+    }
+  }
+
   return (
     <>
       <Navbar />
@@ -224,7 +241,10 @@ function App() {
           <Route path="/planner" element={<PlannerPage movieNight={movieNight}
           movieNights={movieNights}
           onMovieNightChange={handleMovieNightChange}
-          onCreateMovieNight={handleCreateMovieNight}/>} />
+          onCreateMovieNight={handleCreateMovieNight}
+          onDeleteMovieNight={handleDeleteMovieNight}
+          selectedMovieNight={selectedMovieNight}
+          onSelectMovieNight={handleSelectMovieNight}/>} />
         </Routes>
       </main>
     </>

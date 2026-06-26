@@ -1,9 +1,18 @@
-function PlannerPage({movieNight, movieNights, onMovieNightChange, onCreateMovieNight}) {
+function PlannerPage({
+  movieNight,
+  movieNights,
+  onMovieNightChange,
+  onCreateMovieNight,
+  onDeleteMovieNight,
+  selectedMovieNight,
+  onSelectMovieNight,
+}) {
   return (
     <>
       <header className="page-header">
         <h1>Movie Night Planner</h1>
       </header>
+
       <section className="planner-section">
         <form className="planner-form" onSubmit={onCreateMovieNight}>
           <label>
@@ -14,7 +23,7 @@ function PlannerPage({movieNight, movieNights, onMovieNightChange, onCreateMovie
               value={movieNight.title}
               onChange={onMovieNightChange}
               placeholder="Friday horror night"
-            ></input>
+            />
           </label>
 
           <label>
@@ -34,7 +43,7 @@ function PlannerPage({movieNight, movieNights, onMovieNightChange, onCreateMovie
               name="location"
               value={movieNight.location}
               onChange={onMovieNightChange}
-              placeholder="apartment"
+              placeholder="Apartment"
             />
           </label>
 
@@ -44,9 +53,10 @@ function PlannerPage({movieNight, movieNights, onMovieNightChange, onCreateMovie
               name="notes"
               value={movieNight.notes}
               onChange={onMovieNightChange}
-              placeholder="bring snacks"
+              placeholder="Bring snacks"
             />
           </label>
+
           <button type="submit">Save</button>
         </form>
       </section>
@@ -56,14 +66,38 @@ function PlannerPage({movieNight, movieNights, onMovieNightChange, onCreateMovie
 
         {movieNights.length > 0 ? (
           <ul>
-            {movieNights.map((night) => (
-              <li key={night.id} className="movie-night-card">
-                <h3>{night.title}</h3>
-                <p>{night.date || "No date selected"}</p>
-                <p>{night.location || "No location added"}</p>
-                <p>{night.notes || ""}</p>
-              </li>
-            ))}
+            {movieNights.map((night) => {
+              const isSelected = selectedMovieNight?.id === night.id;
+
+              return (
+                <li key={night.id} className="movie-night-card">
+                  <h3>{night.title}</h3>
+
+                  <button
+                    type="button"
+                    onClick={() => onSelectMovieNight(night.id)}
+                  >
+                    {isSelected ? "Hide Details" : "View Details"}
+                  </button>
+
+                  <button
+                    type="button"
+                    className="remove-button"
+                    onClick={() => onDeleteMovieNight(night.id)}
+                  >
+                    Delete
+                  </button>
+
+                  {isSelected && (
+                    <div className="movie-night-details">
+                      <p>{night.date || "No date selected"}</p>
+                      <p>{night.location || "No location added"}</p>
+                      <p>{night.notes || "No notes yet"}</p>
+                    </div>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         ) : (
           <p>No movie nights saved yet.</p>
