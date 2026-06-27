@@ -6,6 +6,8 @@ function PlannerPage({
   onDeleteMovieNight,
   selectedMovieNight,
   onSelectMovieNight,
+  onStartEditMovieNight,
+  editingMovieNightId,
 }) {
   return (
     <>
@@ -57,7 +59,9 @@ function PlannerPage({
             />
           </label>
 
-          <button type="submit">Save</button>
+          <button type="submit">
+            {editingMovieNightId ? "Update Movie Night" : "Save Movie Night"}
+          </button>
         </form>
       </section>
 
@@ -86,6 +90,12 @@ function PlannerPage({
                     onClick={() => onDeleteMovieNight(night.id)}
                   >
                     Delete
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onStartEditMovieNight(night)}
+                  >
+                    Edit
                   </button>
 
                   {isSelected && (

@@ -42,12 +42,13 @@ function App() {
   useEffect(() => {
     localStorage.setItem("movieNightPlans", JSON.stringify(movieNights));
   }, [movieNights]);
-  
+
   const [selectedMovieNightId, setSelectedMovieNightId] = useState(null);
 
   const selectedMovieNight = movieNights.find((night) => {
     return night.id === selectedMovieNightId;
   })
+  const [editingMovieNightId, setEditingMovieNightId] = useState(null);
 
   useEffect(() => {
     localStorage.setItem("movieNightWatchlist", JSON.stringify(watchlist));
@@ -166,25 +167,45 @@ function App() {
     return 0; // If no sorting option is selected, return 0 to keep the original order
   });
 
-  function handleCreateMovieNight(event) {
+function handleCreateMovieNight(event) {
   event.preventDefault();
 
   if (!movieNight.title.trim()) {
     return;
   }
 
-  const newMovieNight = {
-    id: crypto.randomUUID(),
-    title: movieNight.title.trim(),
-    date: movieNight.date,
-    location: movieNight.location.trim(),
-    notes: movieNight.notes.trim(),
-    movies: [],
-    guests: [],
-    snacks: [],
-  };
+  if (editingMovieNightId) {
+    setMovieNights(
+      movieNights.map((night) => {
+        if (night.id === editingMovieNightId) {
+          return {
+            ...night,
+            title: movieNight.title.trim(),
+            date: movieNight.date,
+            location: movieNight.location.trim(),
+            notes: movieNight.notes.trim(),
+          };
+        }
 
-  setMovieNights([...movieNights, newMovieNight]);
+        return night;
+      })
+    );
+  } else {
+    const newMovieNight = {
+      id: crypto.randomUUID(),
+      title: movieNight.title.trim(),
+      date: movieNight.date,
+      location: movieNight.location.trim(),
+      notes: movieNight.notes.trim(),
+      movies: [],
+      guests: [],
+      snacks: [],
+    };
+
+    setMovieNights([...movieNights, newMovieNight]);
+  }
+
+  setEditingMovieNightId(null);
 
   setMovieNight({
     title: "",
@@ -204,6 +225,16 @@ function App() {
     } else {
       setSelectedMovieNightId(movieNightId)
     }
+  }
+  function handleStartEditMovieNight(night){
+    setEditingMovieNightId(night.id);
+
+    setMovieNight({
+      title: night.title,
+      date: night.date,
+      location: night.location,
+      notes: night.notes
+    });
   }
 
   return (
@@ -255,7 +286,9 @@ function App() {
           onCreateMovieNight={handleCreateMovieNight}
           onDeleteMovieNight={handleDeleteMovieNight}
           selectedMovieNight={selectedMovieNight}
-          onSelectMovieNight={handleSelectMovieNight}/>} />
+          onSelectMovieNight={handleSelectMovieNight}
+          editingMovieNightId={editingMovieNightId}
+          onStartEditMovieNight={handleStartEditMovieNight}/>} />
         </Routes>
       </main>
     </>
