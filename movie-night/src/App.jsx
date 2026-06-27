@@ -31,7 +31,18 @@ function App() {
     location: "",
     notes: "",
   });
-  const [movieNights, setMovieNights] = useState([]);
+  const [movieNights, setMovieNights] = useState(() => {
+    const savedMovieNights = localStorage.getItem("movieNightPlans");
+
+    if(savedMovieNights) {
+      return JSON.parse(savedMovieNights);
+    }
+    return [];
+  })
+  useEffect(() => {
+    localStorage.setItem("movieNightPlans", JSON.stringify(movieNights));
+  }, [movieNights]);
+  
   const [selectedMovieNightId, setSelectedMovieNightId] = useState(null);
 
   const selectedMovieNight = movieNights.find((night) => {
