@@ -286,8 +286,12 @@ section {
 
 .planner-form {
   display: grid;
-  gap: 16px;
+  gap: 18px;
   max-width: 700px;
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
 }
 
 .planner-form label{
@@ -296,8 +300,8 @@ section {
   font-weight: 700;
 }
 
-textarea {
-  min-height: 80px;
+.planner-form textarea {
+  min-height: 120px;
   padding: 12px 14px;
   border: 1px solid #cbd5e1;
   border-radius: 8px;
@@ -305,11 +309,59 @@ textarea {
   resize: vertical;
 }
 
+.saved-nights-section {
+  display: grid;
+  gap: 16px;
+}
+
 .movie-night-card {
+  display: grid;
+  gap: 12px;
   padding: 18px;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   background: white;
+}
+
+.movie-night-card h3 {
+  margin: 0;
+}
+
+.movie-night-details {
+  margin-top: 8px;
+  padding: 14px;
+  border-left: 4px solid #2563eb;
+  border-radius: 8px;
+  background: #eff6ff;
+}
+
+.movie-night-details p {
+  margin: 6px 0;
+  line-height: 1.5;
+}
+
+.planner-section {
+  margin-bottom: 40px;
+}
+
+.movie-night-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.movie-night-actions button {
+  width: auto;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+.movie-night-actions .danger-button {
+  background: #dc2626;
+}
+
+.movie-night-actions .danger-button:hover {
+  background: #b91c1c;
 }
 
 

@@ -34,11 +34,11 @@ function App() {
   const [movieNights, setMovieNights] = useState(() => {
     const savedMovieNights = localStorage.getItem("movieNightPlans");
 
-    if(savedMovieNights) {
+    if (savedMovieNights) {
       return JSON.parse(savedMovieNights);
     }
     return [];
-  })
+  });
   useEffect(() => {
     localStorage.setItem("movieNightPlans", JSON.stringify(movieNights));
   }, [movieNights]);
@@ -47,7 +47,7 @@ function App() {
 
   const selectedMovieNight = movieNights.find((night) => {
     return night.id === selectedMovieNightId;
-  })
+  });
   const [editingMovieNightId, setEditingMovieNightId] = useState(null);
 
   useEffect(() => {
@@ -167,74 +167,99 @@ function App() {
     return 0; // If no sorting option is selected, return 0 to keep the original order
   });
 
-function handleCreateMovieNight(event) {
-  event.preventDefault();
+  function handleCreateMovieNight(event) {
+    event.preventDefault();
 
-  if (!movieNight.title.trim()) {
-    return;
+    if (!movieNight.title.trim()) {
+      return;
+    }
+
+    if (editingMovieNightId) {
+      setMovieNights(
+        movieNights.map((night) => {
+          if (night.id === editingMovieNightId) {
+            return {
+              ...night,
+              title: movieNight.title.trim(),
+              date: movieNight.date,
+              location: movieNight.location.trim(),
+              notes: movieNight.notes.trim(),
+            };
+          }
+
+          return night;
+        }),
+      );
+    } else {
+      const newMovieNight = {
+        id: crypto.randomUUID(),
+        title: movieNight.title.trim(),
+        date: movieNight.date,
+        location: movieNight.location.trim(),
+        notes: movieNight.notes.trim(),
+        movies: [],
+        guests: [],
+        snacks: [],
+      };
+
+      setMovieNights([...movieNights, newMovieNight]);
+    }
+
+    setEditingMovieNightId(null);
+
+    setMovieNight({
+      title: "",
+      date: "",
+      location: "",
+      notes: "",
+    });
   }
 
-  if (editingMovieNightId) {
-    setMovieNights(
-      movieNights.map((night) => {
-        if (night.id === editingMovieNightId) {
-          return {
-            ...night,
-            title: movieNight.title.trim(),
-            date: movieNight.date,
-            location: movieNight.location.trim(),
-            notes: movieNight.notes.trim(),
-          };
-        }
-
-        return night;
-      })
-    );
-  } else {
-    const newMovieNight = {
-      id: crypto.randomUUID(),
-      title: movieNight.title.trim(),
-      date: movieNight.date,
-      location: movieNight.location.trim(),
-      notes: movieNight.notes.trim(),
-      movies: [],
-      guests: [],
-      snacks: [],
-    };
-
-    setMovieNights([...movieNights, newMovieNight]);
-  }
-
-  setEditingMovieNightId(null);
-
-  setMovieNight({
-    title: "",
-    date: "",
-    location: "",
-    notes: "",
-  });
-}
-
-  function handleDeleteMovieNight(movieNightId){
+  function handleDeleteMovieNight(movieNightId) {
     setMovieNights(movieNights.filter((night) => night.id !== movieNightId));
   }
 
-  function handleSelectMovieNight(movieNightId){
-    if (selectedMovieNightId === movieNightId){
-      setSelectedMovieNightId(null)
+  function handleSelectMovieNight(movieNightId) {
+    if (selectedMovieNightId === movieNightId) {
+      setSelectedMovieNightId(null);
     } else {
-      setSelectedMovieNightId(movieNightId)
+      setSelectedMovieNightId(movieNightId);
     }
   }
-  function handleStartEditMovieNight(night){
+  function handleStartEditMovieNight(night) {
     setEditingMovieNightId(night.id);
 
     setMovieNight({
       title: night.title,
       date: night.date,
       location: night.location,
-      notes: night.notes
+      notes: night.notes,
     });
+  }
+
+  function handleAddMovieToNight(movieNightId, movie) {
+    setMovieNights(
+      movieNights.map((night) => {
+        if (night.id !== movieNightId) {
+          return night;
+        }
+
+        const currentMovies = night.movies || [];
+
+        const movieAlreadyAdded = currentMovies.some((savedMovie) => {
+          return savedMovie.id === movie.id;
+        });
+
+        if (movieAlreadyAdded) {
+          return night;
+        }
+
+        return {
+          ...night,
+          movies: [...currentMovies, movie],
+        };
+      }),
+    );
   }
 
   return (
@@ -280,15 +305,24 @@ function handleCreateMovieNight(event) {
             }
           />
 
-          <Route path="/planner" element={<PlannerPage movieNight={movieNight}
-          movieNights={movieNights}
-          onMovieNightChange={handleMovieNightChange}
-          onCreateMovieNight={handleCreateMovieNight}
-          onDeleteMovieNight={handleDeleteMovieNight}
-          selectedMovieNight={selectedMovieNight}
-          onSelectMovieNight={handleSelectMovieNight}
-          editingMovieNightId={editingMovieNightId}
-          onStartEditMovieNight={handleStartEditMovieNight}/>} />
+          <Route
+            path="/planner"
+            element={
+              <PlannerPage
+                movieNight={movieNight}
+                movieNights={movieNights}
+                onMovieNightChange={handleMovieNightChange}
+                onCreateMovieNight={handleCreateMovieNight}
+                onDeleteMovieNight={handleDeleteMovieNight}
+                selectedMovieNight={selectedMovieNight}
+                onSelectMovieNight={handleSelectMovieNight}
+                editingMovieNightId={editingMovieNightId}
+                onStartEditMovieNight={handleStartEditMovieNight}
+                onAddToMovieNight={handleAddMovieToNight}
+                watchlist={watchlist}
+              />
+            }
+          />
         </Routes>
       </main>
     </>
