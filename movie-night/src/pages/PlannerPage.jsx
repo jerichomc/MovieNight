@@ -12,6 +12,7 @@ function PlannerPage({
   editingMovieNightId,
   watchlist,
   onAddToMovieNight,
+  onDeleteFromMovieNight,
 }) {
   const [watchlistSearchTerm, setWatchlistSearchTerm] = useState("");
   const [submittedWatchlistSearch, setSubmittedWatchlistSearch] = useState("");
@@ -128,15 +129,22 @@ function PlannerPage({
                       <p>{night.notes || "No notes yet"}</p>
 
                       <div className="movie-night-options">
-                        <h4>Add Movie Options</h4>
+                        <h4>Movie Options</h4>
 
                         <div className="movie-night-selected-movies">
-                          <h4>Movie Options</h4>
 
                           {night.movies && night.movies.length > 0 ? (
                             <ul>
                               {night.movies.map((movie) => (
-                                <li key={movie.id}>{movie.title}</li>
+                                <li key={movie.id}>
+                                  {movie.title}
+                                  <button
+                                    type="button"
+                                    onClick={() => onDeleteFromMovieNight(night.id, movie.id)}
+                                  >
+                                    Remove
+                                  </button>
+                                </li>
                               ))}
                             </ul>
                           ) : (

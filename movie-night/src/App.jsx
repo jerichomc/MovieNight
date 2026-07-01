@@ -54,6 +54,19 @@ function App() {
     localStorage.setItem("movieNightWatchlist", JSON.stringify(watchlist));
   }, [watchlist]);
 
+    const [watchedMovies, setWatchedMovies] = useState(() => {
+    const savedWatchedMovies = localStorage.getItem("movieNightWatchedMovies");
+
+    if(savedWatchedMovies) { //if there are saved movies, return them as array
+      return JSON.parse(savedWatchedMovies);
+    }
+    return []; //if no movies, return empty array
+  })
+
+  useEffect(() => {
+    localStorage.setItem("movieNightWatchedMovies", JSON.stringify(watchedMovies));
+  }, [watchedMovies]); //save watched movies to local storage whenever state changes
+
   async function handleSearch(event) {
     event.preventDefault(); // Prevent the default form submission behavior
     const trimmedSearch = searchTerm.trim(); // Trim whitespace from the search term before sending it to the API
@@ -167,6 +180,8 @@ function App() {
     return 0; // If no sorting option is selected, return 0 to keep the original order
   });
 
+
+
   function handleCreateMovieNight(event) {
     event.preventDefault();
 
@@ -262,6 +277,42 @@ function App() {
     );
   }
 
+  function handleDeleteFromMovieNight(movieNightId, movieId){
+    setMovieNights(
+      movieNights.map((night) => {
+        if (night.id !== movieNightId){ //if no match return as is
+          return night;
+        }
+        
+        const currentMovies = night.movies || [];
+        const updatedMovies = currentMovies.filter((movie) => movie.id !== movieId); //filter out movie with given id
+
+        return {
+          ...night,
+          movies: updatedMovies,
+        };
+      })
+    );
+  }
+
+  function handleMarkMovieWatched(movie){
+    const movieAlreadyWatched = watchedMovies.some((watchedMovie) => {
+      return watchedMovie.id === movie.id;
+    });
+
+    if(movieAlreadyWatched) {
+      return;
+    }
+
+    const watchedMovie = {
+      ...movie,
+      userRating: "",
+      watchedAt: new Date().toISOString(),
+    };
+
+    setWatchedMovies([...watchedMovies, watchedMovie])
+  }
+
   return (
     <>
       <Navbar />
@@ -319,6 +370,7 @@ function App() {
                 editingMovieNightId={editingMovieNightId}
                 onStartEditMovieNight={handleStartEditMovieNight}
                 onAddToMovieNight={handleAddMovieToNight}
+                onDeleteFromMovieNight={handleDeleteFromMovieNight}
                 watchlist={watchlist}
               />
             }
