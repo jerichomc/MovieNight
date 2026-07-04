@@ -5,6 +5,7 @@ import { Routes, Route } from "react-router-dom";
 import SearchPage from "./pages/SearchPage.jsx";
 import WatchlistPage from "./pages/WatchlistPage.jsx";
 import PlannerPage from "./pages/PlannerPage.jsx";
+import WatchedPage from "./pages/WatchedPage.jsx";
 
 function App() {
   const [movies, setMovies] = useState([]); // State to hold the list of movies returned from the search
@@ -354,6 +355,10 @@ function App() {
                 onClearSelectedMovie={handleClearSelectedMovie}
               />
             }
+          />
+          <Route
+            path="/watched"
+            element={<WatchedPage watchedMovies={watchedMovies} />}
           />
 
           <Route
