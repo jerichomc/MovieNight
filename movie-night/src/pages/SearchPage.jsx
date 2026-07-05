@@ -18,13 +18,18 @@ function SearchPage({
   handleChangePage,
   handlePageSelect,
   onAddToWatchlist,
+  reviewingMovieId,
+  movieReview,
+  onStartReview,
+  onMovieReviewChange,
+  onSaveMovieReview,
 }) {
   return (
     <>
-    <header className="page-header">
-      <h1>Search Movies</h1>
-      <p>Find movies and save them to your watchlist!</p>
-    </header>
+      <header className="page-header">
+        <h1>Search Movies</h1>
+        <p>Find movies and save them to your watchlist!</p>
+      </header>
       <SearchForm
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
@@ -47,6 +52,11 @@ function SearchPage({
           handleChangePage={handleChangePage}
           handlePageSelect={handlePageSelect}
           onAddToWatchlist={onAddToWatchlist}
+          reviewingMovieId={reviewingMovieId}
+          movieReview={movieReview}
+          onStartReview={onStartReview}
+          onMovieReviewChange={onMovieReviewChange}
+          onSaveMovieReview={onSaveMovieReview}
         />
       )}
     </>

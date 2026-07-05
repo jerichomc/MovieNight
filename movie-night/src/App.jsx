@@ -68,6 +68,12 @@ function App() {
     localStorage.setItem("movieNightWatchedMovies", JSON.stringify(watchedMovies));
   }, [watchedMovies]); //save watched movies to local storage whenever state changes
 
+  const [reviewingMovieId, setReviewingMovieId] = useState(null);
+  const [movieReview, setMovieReview] = useState({
+    ratin: "", 
+    review: "",
+  })
+
   async function handleSearch(event) {
     event.preventDefault(); // Prevent the default form submission behavior
     const trimmedSearch = searchTerm.trim(); // Trim whitespace from the search term before sending it to the API
@@ -314,6 +320,39 @@ function App() {
     setWatchedMovies([...watchedMovies, watchedMovie])
   }
 
+  function handleStartReview(movieId){
+    setReviewingMovieId(movieId); //remember which movie is being reviewed
+    setMovieReview({ //reset state
+      rating: "",
+      review: "",
+    });
+  }
+
+  function handleReviewChange(event) { //update state as user types
+    const { name, value } = event.target; //get needed values from target
+
+    setMovieReview({
+      ...movieReview,
+      [name]: value,
+    })
+  }
+
+  function handleSaveMovieReview(movie){ //save review to state and local storage
+    const watchedMovie = {
+      ...movie,
+      userRating: movieReview.rating,
+      review: movieReview.review,
+      watchedAt: new Date().toISOString(),
+    };
+
+    setWatchedMovies([...watchedMovies, watchedMovie]);
+    setReviewingMovieId(null);
+    setMovieReview({
+      rating: "",
+      review: "",
+    });
+  }
+
   return (
     <>
       <Navbar />
@@ -340,6 +379,11 @@ function App() {
                 handleChangePage={handlePageChange}
                 handlePageSelect={handlePageSelect}
                 onAddToWatchlist={handleAddToWatchlist}
+                reviewingMovieId={reviewingMovieId}
+                movieReview={movieReview}
+                onStartReview={handleStartReview}
+                onMovieReviewChange={handleReviewChange}
+                onSaveMovieReview={handleSaveMovieReview}
               />
             }
           />
