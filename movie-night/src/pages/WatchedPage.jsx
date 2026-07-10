@@ -1,6 +1,6 @@
 import MovieCard from "../components/MovieCard.jsx";
 
-function WatchedPage({ watchedMovies }) {
+function WatchedPage({ watchedMovies, onRemoveWatchedMovie }) {
   return (
     <>
       <header className="page-header">
@@ -14,6 +14,13 @@ function WatchedPage({ watchedMovies }) {
             {watchedMovies.map((movie) => (
               <MovieCard key={movie.id} movie={movie}>
                 <p>Your rating: {movie.userRating || "Not rated yet"}</p>
+                <button
+                  type="button"
+                  className="remove-button"
+                  onClick={() => onRemoveWatchedMovie(movie.id)}
+                >
+                  Remove
+                </button>
               </MovieCard>
             ))}
           </ul>

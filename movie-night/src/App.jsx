@@ -55,24 +55,28 @@ function App() {
     localStorage.setItem("movieNightWatchlist", JSON.stringify(watchlist));
   }, [watchlist]);
 
-    const [watchedMovies, setWatchedMovies] = useState(() => {
+  const [watchedMovies, setWatchedMovies] = useState(() => {
     const savedWatchedMovies = localStorage.getItem("movieNightWatchedMovies");
 
-    if(savedWatchedMovies) { //if there are saved movies, return them as array
+    if (savedWatchedMovies) {
+      //if there are saved movies, return them as array
       return JSON.parse(savedWatchedMovies);
     }
     return []; //if no movies, return empty array
-  })
+  });
 
   useEffect(() => {
-    localStorage.setItem("movieNightWatchedMovies", JSON.stringify(watchedMovies));
+    localStorage.setItem(
+      "movieNightWatchedMovies",
+      JSON.stringify(watchedMovies),
+    );
   }, [watchedMovies]); //save watched movies to local storage whenever state changes
 
   const [reviewingMovieId, setReviewingMovieId] = useState(null);
   const [movieReview, setMovieReview] = useState({
-    ratin: "", 
+    ratin: "",
     review: "",
-  })
+  });
 
   async function handleSearch(event) {
     event.preventDefault(); // Prevent the default form submission behavior
@@ -187,8 +191,6 @@ function App() {
     return 0; // If no sorting option is selected, return 0 to keep the original order
   });
 
-
-
   function handleCreateMovieNight(event) {
     event.preventDefault();
 
@@ -284,30 +286,33 @@ function App() {
     );
   }
 
-  function handleDeleteFromMovieNight(movieNightId, movieId){
+  function handleDeleteFromMovieNight(movieNightId, movieId) {
     setMovieNights(
       movieNights.map((night) => {
-        if (night.id !== movieNightId){ //if no match return as is
+        if (night.id !== movieNightId) {
+          //if no match return as is
           return night;
         }
-        
+
         const currentMovies = night.movies || [];
-        const updatedMovies = currentMovies.filter((movie) => movie.id !== movieId); //filter out movie with given id
+        const updatedMovies = currentMovies.filter(
+          (movie) => movie.id !== movieId,
+        ); //filter out movie with given id
 
         return {
           ...night,
           movies: updatedMovies,
         };
-      })
+      }),
     );
   }
 
-  function handleMarkMovieWatched(movie){
+  function handleMarkMovieWatched(movie) {
     const movieAlreadyWatched = watchedMovies.some((watchedMovie) => {
       return watchedMovie.id === movie.id;
     });
 
-    if(movieAlreadyWatched) {
+    if (movieAlreadyWatched) {
       return;
     }
 
@@ -317,27 +322,29 @@ function App() {
       watchedAt: new Date().toISOString(),
     };
 
-    setWatchedMovies([...watchedMovies, watchedMovie])
+    setWatchedMovies([...watchedMovies, watchedMovie]);
   }
 
-  function handleStartReview(movieId){
+  function handleStartReview(movieId) {
     setReviewingMovieId(movieId); //remember which movie is being reviewed
-    setMovieReview({ //reset state
+    setMovieReview({
+      //reset state
       rating: "",
       review: "",
     });
   }
 
-  function handleReviewChange(event) { //update state as user types
+  function handleReviewChange(event) {
+    //update state as user types
     const { name, value } = event.target; //get needed values from target
 
     setMovieReview({
       ...movieReview,
       [name]: value,
-    })
+    });
   }
 
-  function handleSaveMovieReview(movie){ //save review to state and local storage
+  function handleSaveMovieReview(movie) {
     const watchedMovie = {
       ...movie,
       userRating: movieReview.rating,
@@ -345,12 +352,37 @@ function App() {
       watchedAt: new Date().toISOString(),
     };
 
-    setWatchedMovies([...watchedMovies, watchedMovie]);
+    const movieAlreadyWatched = watchedMovies.some((watchedMovie) => {
+      return watchedMovie.id === movie.id;
+    });
+
+    if (movieAlreadyWatched) {
+      setWatchedMovies(
+        watchedMovies.map((existingMovie) => {
+          if (existingMovie.id === movie.id) {
+            return watchedMovie;
+          }
+
+          return existingMovie;
+        }),
+      );
+    } else {
+      setWatchedMovies([...watchedMovies, watchedMovie]);
+    }
+
     setReviewingMovieId(null);
     setMovieReview({
       rating: "",
       review: "",
     });
+  }
+
+  function handleRemoveWatchedMovie(movieId) {
+    setWatchedMovies(
+      watchedMovies.filter((movie) => {
+        return movie.id !== movieId;
+      }),
+    );
   }
 
   return (
@@ -402,7 +434,12 @@ function App() {
           />
           <Route
             path="/watched"
-            element={<WatchedPage watchedMovies={watchedMovies} />}
+            element={
+              <WatchedPage
+                watchedMovies={watchedMovies}
+                onRemoveWatchedMovie={handleRemoveWatchedMovie}
+              />
+            }
           />
 
           <Route
