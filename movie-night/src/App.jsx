@@ -74,7 +74,7 @@ function App() {
 
   const [reviewingMovieId, setReviewingMovieId] = useState(null);
   const [movieReview, setMovieReview] = useState({
-    ratin: "",
+    rating: "",
     review: "",
   });
 
@@ -325,12 +325,12 @@ function App() {
     setWatchedMovies([...watchedMovies, watchedMovie]);
   }
 
-  function handleStartReview(movieId) {
-    setReviewingMovieId(movieId); //remember which movie is being reviewed
+  function handleStartReview(movie) {
+    setReviewingMovieId(movie.id);
+
     setMovieReview({
-      //reset state
-      rating: "",
-      review: "",
+      rating: movie.userRating || "",
+      review: movie.review || "",
     });
   }
 
@@ -416,10 +416,25 @@ function App() {
                 onStartReview={handleStartReview}
                 onMovieReviewChange={handleReviewChange}
                 onSaveMovieReview={handleSaveMovieReview}
+                watchedMovies={watchedMovies}
               />
             }
           />
 
+          <Route
+            path="/watched"
+            element={
+              <WatchedPage
+                watchedMovies={watchedMovies}
+                onRemoveWatchedMovie={handleRemoveWatchedMovie}
+                reviewingMovieId={reviewingMovieId}
+                movieReview={movieReview}
+                onStartReview={handleStartReview}
+                onMovieReviewChange={handleReviewChange}
+                onSaveMovieReview={handleSaveMovieReview}
+              />
+            }
+          />
           <Route
             path="/watchlist"
             element={
@@ -429,15 +444,11 @@ function App() {
                 onRemoveFromWatchlist={handleRemoveFromWatchlist}
                 onPickRandomMovie={handlePickRandomMovie}
                 onClearSelectedMovie={handleClearSelectedMovie}
-              />
-            }
-          />
-          <Route
-            path="/watched"
-            element={
-              <WatchedPage
-                watchedMovies={watchedMovies}
-                onRemoveWatchedMovie={handleRemoveWatchedMovie}
+                reviewingMovieId={reviewingMovieId}
+                movieReview={movieReview}
+                onStartReview={handleStartReview}
+                onMovieReviewChange={handleReviewChange}
+                onSaveMovieReview={handleSaveMovieReview}
               />
             }
           />

@@ -16,6 +16,7 @@ function MovieList({
   onStartReview,
   onMovieReviewChange,
   onSaveMovieReview,
+  watchedMovies,
 }) {
   if (!submittedSearch) {
     return null; // Don't render anything if no search has been submitted
@@ -62,6 +63,9 @@ function MovieList({
             const isSaved = watchlist.some((savedMovie) => {
               return savedMovie.id === movie.id;
             });
+            const isWatched = watchedMovies.some((watchedMovie) => {
+              return watchedMovie.id === movie.id;
+            });
 
             return (
               // Render a MovieCard for each movie, passing the movie data and a button to add to the watchlist
@@ -74,8 +78,8 @@ function MovieList({
                 >
                   {isSaved ? "Saved" : "Add to Watchlist"}
                 </button>
-                <button type="button" onClick={() => onStartReview(movie.id)}>
-                  Review
+                <button type="button" onClick={() => onStartReview(movie)}>
+                  {isWatched ? "Update Review" : "Review"}
                 </button>
                 {reviewingMovieId === movie.id && (
                   <form

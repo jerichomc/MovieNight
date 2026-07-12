@@ -23,6 +23,7 @@ function SearchPage({
   onStartReview,
   onMovieReviewChange,
   onSaveMovieReview,
+  watchedMovies,
 }) {
   return (
     <>
@@ -57,6 +58,7 @@ function SearchPage({
           onStartReview={onStartReview}
           onMovieReviewChange={onMovieReviewChange}
           onSaveMovieReview={onSaveMovieReview}
+          watchedMovies={watchedMovies}
         />
       )}
     </>
