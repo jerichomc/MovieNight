@@ -1,4 +1,5 @@
 import WatchedMovieTile from "../components/WatchedMovieTile.jsx";
+import { useState } from "react";
 
 function WatchedPage({
   watchedMovies,
@@ -9,6 +10,8 @@ function WatchedPage({
   onMovieReviewChange,
   onSaveMovieReview,
 }) {
+  const [selectedWatchedMovieId, setSelectedWatchedMovieId] = useState(null);
+
   return (
     <>
       <header className="page-header">
@@ -29,6 +32,8 @@ function WatchedPage({
                 onMovieReviewChange={onMovieReviewChange}
                 onSaveMovieReview={onSaveMovieReview}
                 onRemoveWatchedMovie={onRemoveWatchedMovie}
+                isSelected={selectedWatchedMovieId === movie.id}
+                onSelect={() => setSelectedWatchedMovieId(movie.id)}
               />
             ))}
           </ul>

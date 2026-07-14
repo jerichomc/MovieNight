@@ -375,6 +375,25 @@ section {
   gap: 8px;
 }
 
+.watched-tile-main {
+  display: grid;
+  gap: 8px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+
+.watched-tile-main:hover {
+  background: transparent;
+}
+
+.watched-tile-main:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 4px;
+}
+
 .watched-tile img,
 .watched-tile .poster-placeholder {
   width: 100%;
