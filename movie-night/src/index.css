@@ -364,6 +364,47 @@ section {
   background: #b91c1c;
 }
 
+.watched-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 20px;
+}
+
+.watched-tile {
+  display: grid;
+  gap: 8px;
+}
+
+.watched-tile img,
+.watched-tile .poster-placeholder {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 8px;
+  background: #e5e7eb;
+}
+
+.watched-tile h3 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.watched-tile p {
+  margin: 0;
+  color: #64748b;
+  font-weight: 700;
+}
+
+.watched-tile-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.watched-tile-actions button {
+  padding: 6px 8px;
+  font-size: 13px;
+}
+
 
 @media (max-width: 600px) {
   form {

@@ -1,4 +1,4 @@
-import MovieCard from "../components/MovieCard.jsx";
+import WatchedMovieTile from "../components/WatchedMovieTile.jsx";
 
 function WatchedPage({
   watchedMovies,
@@ -18,60 +18,18 @@ function WatchedPage({
 
       <section className="watched-section">
         {watchedMovies.length > 0 ? (
-          <ul>
+          <ul className="watched-grid">
             {watchedMovies.map((movie) => (
-              <MovieCard key={movie.id} movie={movie}>
-                <p>
-                  Your rating: <b>{movie.userRating || "Not rated yet"}</b>
-                </p>
-
-                <button type="button" onClick={() => onStartReview(movie)}>
-                  Update Review
-                </button>
-
-                {reviewingMovieId === movie.id && (
-                  <form
-                    className="review-form"
-                    onSubmit={(event) => {
-                      event.preventDefault();
-                      onSaveMovieReview(movie);
-                    }}
-                  >
-                    <label>
-                      Rating out of 10
-                      <input
-                        type="number"
-                        name="rating"
-                        min="0"
-                        max="10"
-                        step="1"
-                        value={movieReview.rating}
-                        onChange={onMovieReviewChange}
-                      />
-                    </label>
-
-                    <label>
-                      Review
-                      <textarea
-                        name="review"
-                        value={movieReview.review}
-                        onChange={onMovieReviewChange}
-                        placeholder="Update your review..."
-                      />
-                    </label>
-
-                    <button type="submit">Save Review</button>
-                  </form>
-                )}
-
-                <button
-                  type="button"
-                  className="remove-button"
-                  onClick={() => onRemoveWatchedMovie(movie.id)}
-                >
-                  Remove
-                </button>
-              </MovieCard>
+              <WatchedMovieTile
+                key={movie.id}
+                movie={movie}
+                reviewingMovieId={reviewingMovieId}
+                movieReview={movieReview}
+                onStartReview={onStartReview}
+                onMovieReviewChange={onMovieReviewChange}
+                onSaveMovieReview={onSaveMovieReview}
+                onRemoveWatchedMovie={onRemoveWatchedMovie}
+              />
             ))}
           </ul>
         ) : (
