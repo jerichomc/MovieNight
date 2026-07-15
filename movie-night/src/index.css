@@ -424,6 +424,41 @@ section {
   font-size: 13px;
 }
 
+.watchlist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 20px;
+}
+
+.watchlist-tile {
+  display: grid;
+  gap: 8px;
+}
+
+.watchlist-tile img,
+.watchlist-tile .poster-placeholder {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 8px;
+  background: #e5e7eb;
+}
+
+.watchlist-tile h3 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.watchlist-tile-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.watchlist-tile-actions button {
+  padding: 6px 8px;
+  font-size: 13px;
+}
+
 
 @media (max-width: 600px) {
   form {

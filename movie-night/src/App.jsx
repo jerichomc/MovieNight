@@ -385,6 +385,11 @@ function App() {
     );
   }
 
+  function handleSaveWatchlistMovieReview(movie) {
+    handleSaveMovieReview(movie);
+    handleRemoveFromWatchlist(movie.id);
+  }
+
   return (
     <>
       <Navbar />
@@ -448,7 +453,7 @@ function App() {
                 movieReview={movieReview}
                 onStartReview={handleStartReview}
                 onMovieReviewChange={handleReviewChange}
-                onSaveMovieReview={handleSaveMovieReview}
+                onSaveMovieReview={handleSaveWatchlistMovieReview}
               />
             }
           />

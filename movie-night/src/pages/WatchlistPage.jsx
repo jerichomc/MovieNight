@@ -11,6 +11,7 @@ function WatchlistPage({
   onStartReview,
   onMovieReviewChange,
   onSaveMovieReview,
+  
 }) {
   return (
     <>
