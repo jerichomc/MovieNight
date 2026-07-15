@@ -1,10 +1,6 @@
 function WatchlistMovieTile({
   movie,
-  reviewingMovieId,
-  movieReview,
   onStartReview,
-  onMovieReviewChange,
-  onSaveMovieReview,
   onRemoveFromWatchlist,
 }) {
   const posterUrl = movie.poster_path
@@ -35,40 +31,6 @@ function WatchlistMovieTile({
         </button>
       </div>
 
-      {reviewingMovieId === movie.id && (
-        <form
-          className="review-form"
-          onSubmit={(event) => {
-            event.preventDefault();
-            onSaveMovieReview(movie);
-          }}
-        >
-          <label>
-            Rating
-            <input
-              type="number"
-              name="rating"
-              min="0"
-              max="10"
-              step="1"
-              value={movieReview.rating}
-              onChange={onMovieReviewChange}
-            />
-          </label>
-
-          <label>
-            Review
-            <textarea
-              name="review"
-              value={movieReview.review}
-              onChange={onMovieReviewChange}
-              placeholder="What did you think?"
-            />
-          </label>
-
-          <button type="submit">Save Review</button>
-        </form>
-      )}
     </li>
   );
 }

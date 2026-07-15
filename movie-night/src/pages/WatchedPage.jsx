@@ -4,11 +4,7 @@ import { useState } from "react";
 function WatchedPage({
   watchedMovies,
   onRemoveWatchedMovie,
-  reviewingMovieId,
-  movieReview,
   onStartReview,
-  onMovieReviewChange,
-  onSaveMovieReview,
 }) {
   const [selectedWatchedMovieId, setSelectedWatchedMovieId] = useState(null);
 
@@ -26,11 +22,7 @@ function WatchedPage({
               <WatchedMovieTile
                 key={movie.id}
                 movie={movie}
-                reviewingMovieId={reviewingMovieId}
-                movieReview={movieReview}
                 onStartReview={onStartReview}
-                onMovieReviewChange={onMovieReviewChange}
-                onSaveMovieReview={onSaveMovieReview}
                 onRemoveWatchedMovie={onRemoveWatchedMovie}
                 isSelected={selectedWatchedMovieId === movie.id}
                 onSelect={() => setSelectedWatchedMovieId(movie.id)}

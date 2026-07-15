@@ -7,11 +7,7 @@ function Watchlist({
   onRemoveFromWatchlist,
   onPickRandomMovie,
   onClearSelectedMovie,
-  reviewingMovieId,
-  movieReview,
   onStartReview,
-  onMovieReviewChange,
-  onSaveMovieReview,
 }) {
   let watchlistMessage = "";
   if (watchlist.length <= 0) {
@@ -50,11 +46,7 @@ function Watchlist({
             <WatchlistMovieTile
               key={movie.id}
               movie={movie}
-              reviewingMovieId={reviewingMovieId}
-              movieReview={movieReview}
               onStartReview={onStartReview}
-              onMovieReviewChange={onMovieReviewChange}
-              onSaveMovieReview={onSaveMovieReview}
               onRemoveFromWatchlist={onRemoveFromWatchlist}
             />
           ))}

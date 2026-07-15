@@ -1,13 +1,16 @@
 import { useState, useEffect } from "react";
 import { searchMovies } from "./api/tmdb.js"; // Import the searchMovies function from the TMDB API module
 import Navbar from "./components/Navbar.jsx";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import SearchPage from "./pages/SearchPage.jsx";
 import WatchlistPage from "./pages/WatchlistPage.jsx";
 import PlannerPage from "./pages/PlannerPage.jsx";
 import WatchedPage from "./pages/WatchedPage.jsx";
+import ReviewPage from "./pages/ReviewPage.jsx";
 
 function App() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [movies, setMovies] = useState([]); // State to hold the list of movies returned from the search
   const [isLoading, setIsLoading] = useState(false); // State to track if the app is currently loading data from the API
   const [errorMessage, setErrorMessage] = useState(""); // State to hold any error messages from the API
@@ -77,6 +80,18 @@ function App() {
     rating: "",
     review: "",
   });
+  const [reviewContext, setReviewContext] = useState(null);
+
+  useEffect(() => {
+    if (location.pathname !== "/review" && reviewContext) {
+      setReviewContext(null);
+      setReviewingMovieId(null);
+      setMovieReview({
+        rating: "",
+        review: "",
+      });
+    }
+  }, [location.pathname]);
 
   async function handleSearch(event) {
     event.preventDefault(); // Prevent the default form submission behavior
@@ -325,13 +340,21 @@ function App() {
     setWatchedMovies([...watchedMovies, watchedMovie]);
   }
 
-  function handleStartReview(movie) {
+  function handleStartReview(movie, options = {}) {
     setReviewingMovieId(movie.id);
 
     setMovieReview({
       rating: movie.userRating || "",
       review: movie.review || "",
     });
+
+    setReviewContext({
+      movie,
+      returnPath: options.returnPath || location.pathname,
+      removeFromWatchlist: options.removeFromWatchlist || false,
+    });
+
+    navigate("/review");
   }
 
   function handleReviewChange(event) {
@@ -390,6 +413,35 @@ function App() {
     handleRemoveFromWatchlist(movie.id);
   }
 
+  function handleSaveActiveReview() {
+    if (!reviewContext) {
+      return;
+    }
+
+    if (reviewContext.removeFromWatchlist) {
+      handleSaveWatchlistMovieReview(reviewContext.movie);
+    } else {
+      handleSaveMovieReview(reviewContext.movie);
+    }
+
+    const returnPath = reviewContext.returnPath || "/watched";
+    setReviewContext(null);
+    navigate(returnPath);
+  }
+
+  function handleCancelReview() {
+    const returnPath = reviewContext?.returnPath || "/";
+
+    setReviewContext(null);
+    setReviewingMovieId(null);
+    setMovieReview({
+      rating: "",
+      review: "",
+    });
+
+    navigate(returnPath);
+  }
+
   return (
     <>
       <Navbar />
@@ -416,11 +468,7 @@ function App() {
                 handleChangePage={handlePageChange}
                 handlePageSelect={handlePageSelect}
                 onAddToWatchlist={handleAddToWatchlist}
-                reviewingMovieId={reviewingMovieId}
-                movieReview={movieReview}
                 onStartReview={handleStartReview}
-                onMovieReviewChange={handleReviewChange}
-                onSaveMovieReview={handleSaveMovieReview}
                 watchedMovies={watchedMovies}
               />
             }
@@ -432,11 +480,7 @@ function App() {
               <WatchedPage
                 watchedMovies={watchedMovies}
                 onRemoveWatchedMovie={handleRemoveWatchedMovie}
-                reviewingMovieId={reviewingMovieId}
-                movieReview={movieReview}
                 onStartReview={handleStartReview}
-                onMovieReviewChange={handleReviewChange}
-                onSaveMovieReview={handleSaveMovieReview}
               />
             }
           />
@@ -449,11 +493,25 @@ function App() {
                 onRemoveFromWatchlist={handleRemoveFromWatchlist}
                 onPickRandomMovie={handlePickRandomMovie}
                 onClearSelectedMovie={handleClearSelectedMovie}
-                reviewingMovieId={reviewingMovieId}
+                onStartReview={(movie) =>
+                  handleStartReview(movie, {
+                    returnPath: "/watchlist",
+                    removeFromWatchlist: true,
+                  })
+                }
+              />
+            }
+          />
+
+          <Route
+            path="/review"
+            element={
+              <ReviewPage
+                movie={reviewContext?.movie}
                 movieReview={movieReview}
-                onStartReview={handleStartReview}
                 onMovieReviewChange={handleReviewChange}
-                onSaveMovieReview={handleSaveWatchlistMovieReview}
+                onSaveReview={handleSaveActiveReview}
+                onCancelReview={handleCancelReview}
               />
             }
           />

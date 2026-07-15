@@ -6,12 +6,7 @@ function WatchlistPage({
   onRemoveFromWatchlist,
   onPickRandomMovie,
   onClearSelectedMovie,
-  reviewingMovieId,
-  movieReview,
   onStartReview,
-  onMovieReviewChange,
-  onSaveMovieReview,
-  
 }) {
   return (
     <>
@@ -24,11 +19,7 @@ function WatchlistPage({
         onRemoveFromWatchlist={onRemoveFromWatchlist}
         onPickRandomMovie={onPickRandomMovie}
         onClearSelectedMovie={onClearSelectedMovie}
-        reviewingMovieId={reviewingMovieId}
-        movieReview={movieReview}
         onStartReview={onStartReview}
-        onMovieReviewChange={onMovieReviewChange}
-        onSaveMovieReview={onSaveMovieReview}
       />
     </>
   );
