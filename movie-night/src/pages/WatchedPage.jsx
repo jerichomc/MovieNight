@@ -12,7 +12,7 @@ function WatchedPage({
     <>
       <header className="page-header">
         <h1>Watched Movies</h1>
-        <p>Track movies you have seen and rated.</p>
+        <p>({watchedMovies.length})</p>
       </header>
 
       <section className="watched-section">

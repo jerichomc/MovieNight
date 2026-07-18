@@ -18,11 +18,7 @@ function SearchPage({
   handleChangePage,
   handlePageSelect,
   onAddToWatchlist,
-  reviewingMovieId,
-  movieReview,
   onStartReview,
-  onMovieReviewChange,
-  onSaveMovieReview,
   watchedMovies,
 }) {
   return (
@@ -53,11 +49,7 @@ function SearchPage({
           handleChangePage={handleChangePage}
           handlePageSelect={handlePageSelect}
           onAddToWatchlist={onAddToWatchlist}
-          reviewingMovieId={reviewingMovieId}
-          movieReview={movieReview}
           onStartReview={onStartReview}
-          onMovieReviewChange={onMovieReviewChange}
-          onSaveMovieReview={onSaveMovieReview}
           watchedMovies={watchedMovies}
         />
       )}

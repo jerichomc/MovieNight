@@ -75,7 +75,7 @@ function App() {
     );
   }, [watchedMovies]); //save watched movies to local storage whenever state changes
 
-  const [reviewingMovieId, setReviewingMovieId] = useState(null);
+  
   const [movieReview, setMovieReview] = useState({
     rating: "",
     review: "",
@@ -85,7 +85,6 @@ function App() {
   useEffect(() => {
     if (location.pathname !== "/review" && reviewContext) {
       setReviewContext(null);
-      setReviewingMovieId(null);
       setMovieReview({
         rating: "",
         review: "",
@@ -322,26 +321,8 @@ function App() {
     );
   }
 
-  function handleMarkMovieWatched(movie) {
-    const movieAlreadyWatched = watchedMovies.some((watchedMovie) => {
-      return watchedMovie.id === movie.id;
-    });
-
-    if (movieAlreadyWatched) {
-      return;
-    }
-
-    const watchedMovie = {
-      ...movie,
-      userRating: "",
-      watchedAt: new Date().toISOString(),
-    };
-
-    setWatchedMovies([...watchedMovies, watchedMovie]);
-  }
 
   function handleStartReview(movie, options = {}) {
-    setReviewingMovieId(movie.id);
 
     setMovieReview({
       rating: movie.userRating || "",
@@ -393,7 +374,6 @@ function App() {
       setWatchedMovies([...watchedMovies, watchedMovie]);
     }
 
-    setReviewingMovieId(null);
     setMovieReview({
       rating: "",
       review: "",
@@ -433,7 +413,6 @@ function App() {
     const returnPath = reviewContext?.returnPath || "/";
 
     setReviewContext(null);
-    setReviewingMovieId(null);
     setMovieReview({
       rating: "",
       review: "",
