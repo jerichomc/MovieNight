@@ -7,6 +7,7 @@ import WatchlistPage from "./pages/WatchlistPage.jsx";
 import PlannerPage from "./pages/PlannerPage.jsx";
 import WatchedPage from "./pages/WatchedPage.jsx";
 import ReviewPage from "./pages/ReviewPage.jsx";
+import { checkApiHealth } from "./api/backend.js";
 
 function App() {
   const navigate = useNavigate();
@@ -16,6 +17,20 @@ function App() {
   const [errorMessage, setErrorMessage] = useState(""); // State to hold any error messages from the API
   const [searchTerm, setSearchTerm] = useState("");
   const [submittedSearch, setSubmittedSearch] = useState("");
+  const [apiStatus, setApiStatus] = useState("");
+  useEffect(() => {
+  async function loadApiStatus() {
+    try {
+      const data = await checkApiHealth();
+      setApiStatus(data.message);
+    } catch (error) {
+      console.error(error);
+      setApiStatus("Backend not connected");
+    }
+  }
+
+  loadApiStatus();
+}, []);
   const [watchlist, setWatchlist] = useState(() => {
     const savedWatchlist = localStorage.getItem("movieNightWatchlist");
 
@@ -424,6 +439,7 @@ function App() {
   return (
     <>
       <Navbar />
+      <p>{apiStatus}</p>
 
       <main>
         <Routes>
