@@ -7,7 +7,12 @@ import WatchlistPage from "./pages/WatchlistPage.jsx";
 import PlannerPage from "./pages/PlannerPage.jsx";
 import WatchedPage from "./pages/WatchedPage.jsx";
 import ReviewPage from "./pages/ReviewPage.jsx";
-import { checkApiHealth } from "./api/backend.js";
+import { checkApiHealth,
+  getWatchlist,
+  addMovieToWatchlist,
+  deleteMovieFromWatchlist,
+ } from "./api/backend.js";
+
 
 function App() {
   const navigate = useNavigate();
@@ -31,15 +36,19 @@ function App() {
 
   loadApiStatus();
 }, []);
-  const [watchlist, setWatchlist] = useState(() => {
-    const savedWatchlist = localStorage.getItem("movieNightWatchlist");
-
-    if (savedWatchlist) {
-      return JSON.parse(savedWatchlist);
+const [watchlist, setWatchlist] = useState([]);
+useEffect(() => { //this uses backend to retrieve watchlist and sets it to state on load
+  async function loadWatchlist(){
+    try {
+      const data = await getWatchlist();
+      setWatchlist(data);
+    } catch (error) {
+      console.error(error);
     }
+  }
+  loadWatchlist();
+}, []);
 
-    return [];
-  });
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [sortBy, setSortBy] = useState("popularity"); // State to track the current sorting option for the movie list, defaulting to sorting by popularity in descending order
   const [currentPage, setCurrentPage] = useState(1); // State to track the current page of search results for pagination purposes
@@ -69,9 +78,6 @@ function App() {
   });
   const [editingMovieNightId, setEditingMovieNightId] = useState(null);
 
-  useEffect(() => {
-    localStorage.setItem("movieNightWatchlist", JSON.stringify(watchlist));
-  }, [watchlist]);
 
   const [watchedMovies, setWatchedMovies] = useState(() => {
     const savedWatchedMovies = localStorage.getItem("movieNightWatchedMovies");
@@ -167,18 +173,35 @@ function App() {
     }
   }
 
-  function handleAddToWatchlist(movie) {
-    const movieAlreadySaved = watchlist.some((savedMovie) => {
+  async function handleAddToWatchlist(movie) {
+    const movieAlreadySaved = watchlist.some((savedMovie) => { //check if any movie matches id
       return savedMovie.id === movie.id;
     });
+    if(movieAlreadySaved){
+      return;
+    }
 
-    if (!movieAlreadySaved) {
-      setWatchlist([...watchlist, movie]);
+    try {
+      const savedMovie = await addMovieToWatchlist(movie); //try adding from backend
+      setWatchlist([...watchlist, savedMovie]);
+    } catch (error) {
+      console.error(error);
     }
   }
 
-  function handleRemoveFromWatchlist(movieId) {
-    setWatchlist(watchlist.filter((movie) => movie.id !== movieId));
+
+  async function handleRemoveFromWatchlist(movieId) {
+    try {
+      await deleteMovieFromWatchlist(movieId);
+
+      setWatchlist(
+        watchlist.filter((movie) => {
+          return movie.id !== movieId; //filter given id movie out
+        }),
+      );
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   function handlePickRandomMovie() {
