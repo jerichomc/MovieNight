@@ -11,6 +11,9 @@ import { checkApiHealth,
   getWatchlist,
   addMovieToWatchlist,
   deleteMovieFromWatchlist,
+  getWatchedMovies,
+  addWatchedMovie,
+  deleteWatchedMovie,
  } from "./api/backend.js";
 
 
@@ -79,24 +82,20 @@ useEffect(() => { //this uses backend to retrieve watchlist and sets it to state
   const [editingMovieNightId, setEditingMovieNightId] = useState(null);
 
 
-  const [watchedMovies, setWatchedMovies] = useState(() => {
-    const savedWatchedMovies = localStorage.getItem("movieNightWatchedMovies");
-
-    if (savedWatchedMovies) {
-      //if there are saved movies, return them as array
-      return JSON.parse(savedWatchedMovies);
-    }
-    return []; //if no movies, return empty array
-  });
+  const [watchedMovies, setWatchedMovies] = useState([]);
 
   useEffect(() => {
-    localStorage.setItem(
-      "movieNightWatchedMovies",
-      JSON.stringify(watchedMovies),
-    );
-  }, [watchedMovies]); //save watched movies to local storage whenever state changes
+    async function loadWatchedMovies() {
+      try {
+        const data = await getWatchedMovies();
+        setWatchedMovies(data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    loadWatchedMovies(); // Load watched movies from the backend when the component mounts
+  }, []);
 
-  
   const [movieReview, setMovieReview] = useState({
     rating: "",
     review: "",
@@ -386,78 +385,69 @@ useEffect(() => { //this uses backend to retrieve watchlist and sets it to state
     });
   }
 
-  function handleSaveMovieReview(movie) {
-    const watchedMovie = {
-      ...movie,
-      userRating: movieReview.rating,
-      review: movieReview.review,
-      watchedAt: new Date().toISOString(),
-    };
+  async function handleSaveMovieReview(movie) {
+  const watchedMovie = {
+    ...movie,
+    userRating: movieReview.rating,
+    review: movieReview.review,
+    watchedAt: new Date().toISOString(),
+  };
 
-    const movieAlreadyWatched = watchedMovies.some((watchedMovie) => {
-      return watchedMovie.id === movie.id;
-    });
+  try {
+    const savedMovie = await addWatchedMovie(watchedMovie);
 
-    if (movieAlreadyWatched) {
-      setWatchedMovies(
-        watchedMovies.map((existingMovie) => {
-          if (existingMovie.id === movie.id) {
-            return watchedMovie;
-          }
-
-          return existingMovie;
-        }),
-      );
-    } else {
-      setWatchedMovies([...watchedMovies, watchedMovie]);
-    }
+    setWatchedMovies([...watchedMovies, savedMovie]);
 
     setMovieReview({
       rating: "",
       review: "",
     });
+  } catch (error) {
+    console.error(error);
   }
+}
 
-  function handleRemoveWatchedMovie(movieId) {
+  async function handleRemoveWatchedMovie(movieId) {
+  try {
+    await deleteWatchedMovie(movieId);
+
     setWatchedMovies(
       watchedMovies.filter((movie) => {
         return movie.id !== movieId;
       }),
     );
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function handleSaveActiveReview() {
+  if (!reviewContext) {
+    return;
   }
 
-  function handleSaveWatchlistMovieReview(movie) {
-    handleSaveMovieReview(movie);
-    handleRemoveFromWatchlist(movie.id);
+  await handleSaveMovieReview(reviewContext.movie);
+
+  if (reviewContext.removeFromWatchlist) {
+    await handleRemoveFromWatchlist(reviewContext.movie.id);
   }
 
-  function handleSaveActiveReview() {
-    if (!reviewContext) {
-      return;
-    }
+  const returnPath = reviewContext.returnPath || "/watched";
+  setReviewContext(null);
+  navigate(returnPath);
+}
 
-    if (reviewContext.removeFromWatchlist) {
-      handleSaveWatchlistMovieReview(reviewContext.movie);
-    } else {
-      handleSaveMovieReview(reviewContext.movie);
-    }
+function handleCancelReview() {
+  const returnPath = reviewContext?.returnPath || "/";
 
-    const returnPath = reviewContext.returnPath || "/watched";
-    setReviewContext(null);
-    navigate(returnPath);
-  }
+  setReviewContext(null);
+  setMovieReview({
+    rating: "",
+    review: "",
+  });
 
-  function handleCancelReview() {
-    const returnPath = reviewContext?.returnPath || "/";
-
-    setReviewContext(null);
-    setMovieReview({
-      rating: "",
-      review: "",
-    });
-
-    navigate(returnPath);
-  }
+  navigate(returnPath);
+}
 
   return (
     <>

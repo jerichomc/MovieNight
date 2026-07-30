@@ -45,3 +45,39 @@ export async function deleteMovieFromWatchlist(movieId){
         throw new Error('Failed to delete movie from watchlist');
     }
 }
+
+export async function getWatchedMovies() {
+    const response = await fetch(`${API_BASE_URL}/api/watched`);
+
+    if(!response.ok){
+        throw new Error('Failed to load watched movies');
+    }
+
+    return response.json();
+}
+
+export async function addWatchedMovie(movie) {
+    const response = await fetch(`${API_BASE_URL}/api/watched`, {
+        method: 'POST',
+        headers: {
+            'Content-Type' : 'application/json'
+        }, 
+        body: JSON.stringify(movie) // Convert the movie object to a JSON string for the request body
+    });
+
+    if(!response.ok){
+        throw new Error('Failed to add movie to watched list');
+    }
+
+    return response.json(); //parse saved movie returnd from backend
+}
+
+export async function deleteWatchedMovie(movieId){
+    const response = await fetch(`${API_BASE_URL}/api/watched/${movieId}`, { // Delete a movie from the watchlist
+        method: 'DELETE' // Specify the HTTP method as DELETE
+    });
+
+    if(!response.ok) {
+        throw new Error('Failed to delete movie from watched list');
+    }
+}
