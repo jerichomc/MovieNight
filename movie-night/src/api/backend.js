@@ -81,3 +81,19 @@ export async function deleteWatchedMovie(movieId){
         throw new Error('Failed to delete movie from watched list');
     }
 }
+
+export async function updateWatchedMovie(movieId, updatedFields){
+    const response = await fetch(`${API_BASE_URL}/api/watched/${movieId}`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type' : 'application/json'
+        },
+        body: JSON.stringify(updatedFields)
+    });
+
+    if(!response.ok){
+        throw new Error('Failed to update movie.');
+    }
+
+    return response.json(); //parse updated movie returned from backend
+}

@@ -33,4 +33,24 @@ router.delete("/:id", (req, res) => {
     res.status(204).send();
 });
 
+router.patch("/:id", (req, res) => {
+    const movieId = Number(req.params.id); //convert id to number
+    const updatedFields = req.body;
+
+    let updatedMovie = null;
+
+    watchedMovies = watchedMovies.map((movie) => { //find matching movie and update it
+        if(movie.id !== movieId){
+            return movie;
+        }
+
+        updatedMovie = {...movie, ...updatedFields};
+        return updatedMovie;
+    });
+    if(!updatedMovie){
+        return res.status(404).json({message: "movie not found"});
+    }
+    res.json(updatedMovie);
+})
+
 export default router;

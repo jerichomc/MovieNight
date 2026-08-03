@@ -7,15 +7,16 @@ import WatchlistPage from "./pages/WatchlistPage.jsx";
 import PlannerPage from "./pages/PlannerPage.jsx";
 import WatchedPage from "./pages/WatchedPage.jsx";
 import ReviewPage from "./pages/ReviewPage.jsx";
-import { checkApiHealth,
+import {
+  checkApiHealth,
   getWatchlist,
   addMovieToWatchlist,
   deleteMovieFromWatchlist,
   getWatchedMovies,
   addWatchedMovie,
   deleteWatchedMovie,
- } from "./api/backend.js";
-
+  updateWatchedMovie,
+} from "./api/backend.js";
 
 function App() {
   const navigate = useNavigate();
@@ -27,30 +28,31 @@ function App() {
   const [submittedSearch, setSubmittedSearch] = useState("");
   const [apiStatus, setApiStatus] = useState("");
   useEffect(() => {
-  async function loadApiStatus() {
-    try {
-      const data = await checkApiHealth();
-      setApiStatus(data.message);
-    } catch (error) {
-      console.error(error);
-      setApiStatus("Backend not connected");
+    async function loadApiStatus() {
+      try {
+        const data = await checkApiHealth();
+        setApiStatus(data.message);
+      } catch (error) {
+        console.error(error);
+        setApiStatus("Backend not connected");
+      }
     }
-  }
 
-  loadApiStatus();
-}, []);
-const [watchlist, setWatchlist] = useState([]);
-useEffect(() => { //this uses backend to retrieve watchlist and sets it to state on load
-  async function loadWatchlist(){
-    try {
-      const data = await getWatchlist();
-      setWatchlist(data);
-    } catch (error) {
-      console.error(error);
+    loadApiStatus();
+  }, []);
+  const [watchlist, setWatchlist] = useState([]);
+  useEffect(() => {
+    //this uses backend to retrieve watchlist and sets it to state on load
+    async function loadWatchlist() {
+      try {
+        const data = await getWatchlist();
+        setWatchlist(data);
+      } catch (error) {
+        console.error(error);
+      }
     }
-  }
-  loadWatchlist();
-}, []);
+    loadWatchlist();
+  }, []);
 
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [sortBy, setSortBy] = useState("popularity"); // State to track the current sorting option for the movie list, defaulting to sorting by popularity in descending order
@@ -80,7 +82,6 @@ useEffect(() => { //this uses backend to retrieve watchlist and sets it to state
     return night.id === selectedMovieNightId;
   });
   const [editingMovieNightId, setEditingMovieNightId] = useState(null);
-
 
   const [watchedMovies, setWatchedMovies] = useState([]);
 
@@ -173,10 +174,11 @@ useEffect(() => { //this uses backend to retrieve watchlist and sets it to state
   }
 
   async function handleAddToWatchlist(movie) {
-    const movieAlreadySaved = watchlist.some((savedMovie) => { //check if any movie matches id
+    const movieAlreadySaved = watchlist.some((savedMovie) => {
+      //check if any movie matches id
       return savedMovie.id === movie.id;
     });
-    if(movieAlreadySaved){
+    if (movieAlreadySaved) {
       return;
     }
 
@@ -187,7 +189,6 @@ useEffect(() => { //this uses backend to retrieve watchlist and sets it to state
       console.error(error);
     }
   }
-
 
   async function handleRemoveFromWatchlist(movieId) {
     try {
@@ -358,9 +359,7 @@ useEffect(() => { //this uses backend to retrieve watchlist and sets it to state
     );
   }
 
-
   function handleStartReview(movie, options = {}) {
-
     setMovieReview({
       rating: movie.userRating || "",
       review: movie.review || "",
@@ -393,10 +392,28 @@ useEffect(() => { //this uses backend to retrieve watchlist and sets it to state
     watchedAt: new Date().toISOString(),
   };
 
-  try {
-    const savedMovie = await addWatchedMovie(watchedMovie);
+  const movieAlreadyWatched = watchedMovies.some((watchedMovie) => {
+    return watchedMovie.id === movie.id;
+  });
 
-    setWatchedMovies([...watchedMovies, savedMovie]);
+  try {
+    if (movieAlreadyWatched) {
+      const updatedMovie = await updateWatchedMovie(movie.id, watchedMovie);
+
+      setWatchedMovies(
+        watchedMovies.map((existingMovie) => {
+          if (existingMovie.id === movie.id) {
+            return updatedMovie;
+          }
+
+          return existingMovie;
+        }),
+      );
+    } else {
+      const savedMovie = await addWatchedMovie(watchedMovie);
+
+      setWatchedMovies([...watchedMovies, savedMovie]);
+    }
 
     setMovieReview({
       rating: "",
@@ -408,46 +425,46 @@ useEffect(() => { //this uses backend to retrieve watchlist and sets it to state
 }
 
   async function handleRemoveWatchedMovie(movieId) {
-  try {
-    await deleteWatchedMovie(movieId);
+    try {
+      await deleteWatchedMovie(movieId);
 
-    setWatchedMovies(
-      watchedMovies.filter((movie) => {
-        return movie.id !== movieId;
-      }),
-    );
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-async function handleSaveActiveReview() {
-  if (!reviewContext) {
-    return;
+      setWatchedMovies(
+        watchedMovies.filter((movie) => {
+          return movie.id !== movieId;
+        }),
+      );
+    } catch (error) {
+      console.error(error);
+    }
   }
 
-  await handleSaveMovieReview(reviewContext.movie);
+  async function handleSaveActiveReview() {
+    if (!reviewContext) {
+      return;
+    }
 
-  if (reviewContext.removeFromWatchlist) {
-    await handleRemoveFromWatchlist(reviewContext.movie.id);
+    await handleSaveMovieReview(reviewContext.movie);
+
+    if (reviewContext.removeFromWatchlist) {
+      await handleRemoveFromWatchlist(reviewContext.movie.id);
+    }
+
+    const returnPath = reviewContext.returnPath || "/watched";
+    setReviewContext(null);
+    navigate(returnPath);
   }
 
-  const returnPath = reviewContext.returnPath || "/watched";
-  setReviewContext(null);
-  navigate(returnPath);
-}
+  function handleCancelReview() {
+    const returnPath = reviewContext?.returnPath || "/";
 
-function handleCancelReview() {
-  const returnPath = reviewContext?.returnPath || "/";
+    setReviewContext(null);
+    setMovieReview({
+      rating: "",
+      review: "",
+    });
 
-  setReviewContext(null);
-  setMovieReview({
-    rating: "",
-    review: "",
-  });
-
-  navigate(returnPath);
-}
+    navigate(returnPath);
+  }
 
   return (
     <>
