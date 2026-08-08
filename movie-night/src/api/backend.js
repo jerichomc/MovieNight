@@ -97,3 +97,61 @@ export async function updateWatchedMovie(movieId, updatedFields){
 
     return response.json(); //parse updated movie returned from backend
 }
+
+export async function getMovieNights() {
+  const response = await fetch(`${API_BASE_URL}/api/movie-nights`);
+
+  if (!response.ok) {
+    throw new Error("Failed to load movie nights");
+  }
+
+  return response.json();
+}
+
+export async function createMovieNight(movieNight) {
+  const response = await fetch(`${API_BASE_URL}/api/movie-nights`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(movieNight),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to create movie night");
+  }
+
+  return response.json();
+}
+
+export async function updateMovieNight(movieNightId, updatedFields) {
+  const response = await fetch(
+    `${API_BASE_URL}/api/movie-nights/${movieNightId}`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedFields),
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to update movie night");
+  }
+
+  return response.json();
+}
+
+export async function deleteMovieNight(movieNightId) {
+  const response = await fetch(
+    `${API_BASE_URL}/api/movie-nights/${movieNightId}`,
+    {
+      method: "DELETE",
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to delete movie night");
+  }
+}

@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import watchlistRoutes from "./routes/watchlistRoutes.js";
 import watchedRoutes from "./routes/watchedRoutes.js";
+import movieNightRoutes from "./routes/movieNightRoutes.js";
 
 dotenv.config();
 
@@ -13,6 +14,7 @@ app.use(cors());
 app.use(express.json());
 app.use("/api/watchlist", watchlistRoutes); //mount the watchlist routes under path
 app.use("/api/watched", watchedRoutes); //mount the watched routes under path
+app.use("/api/movie-nights", movieNightRoutes); //mount the movie night routes under path
 
 app.get("/api/health", (req, res) => {
     res.json({

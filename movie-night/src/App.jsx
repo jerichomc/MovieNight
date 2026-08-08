@@ -16,6 +16,10 @@ import {
   addWatchedMovie,
   deleteWatchedMovie,
   updateWatchedMovie,
+  getMovieNights,
+  createMovieNight,
+  updateMovieNight,
+  deleteMovieNight,
 } from "./api/backend.js";
 
 function App() {
@@ -64,17 +68,20 @@ function App() {
     location: "",
     notes: "",
   });
-  const [movieNights, setMovieNights] = useState(() => {
-    const savedMovieNights = localStorage.getItem("movieNightPlans");
+  const [movieNights, setMovieNights] = useState([]);
 
-    if (savedMovieNights) {
-      return JSON.parse(savedMovieNights);
+useEffect(() => {
+  async function loadMovieNights() {
+    try {
+      const data = await getMovieNights();
+      setMovieNights(data);
+    } catch (error) {
+      console.error(error);
     }
-    return [];
-  });
-  useEffect(() => {
-    localStorage.setItem("movieNightPlans", JSON.stringify(movieNights));
-  }, [movieNights]);
+  }
+
+  loadMovieNights();
+}, []);
 
   const [selectedMovieNightId, setSelectedMovieNightId] = useState(null);
 
@@ -243,42 +250,47 @@ function App() {
     return 0; // If no sorting option is selected, return 0 to keep the original order
   });
 
-  function handleCreateMovieNight(event) {
+  async function handleCreateMovieNight(event) {
     event.preventDefault();
 
     if (!movieNight.title.trim()) {
       return;
     }
 
+    const movieNightData = {
+      title: movieNight.title.trim(),
+      date: movieNight.date,
+      location: movieNight.location.trim(),
+      notes: movieNight.notes.trim(),
+    };
+
     if (editingMovieNightId) {
-      setMovieNights(
-        movieNights.map((night) => {
-          if (night.id === editingMovieNightId) {
-            return {
-              ...night,
-              title: movieNight.title.trim(),
-              date: movieNight.date,
-              location: movieNight.location.trim(),
-              notes: movieNight.notes.trim(),
-            };
-          }
+      try {
+        const updatedNight = await updateMovieNight(
+          editingMovieNightId,
+          movieNightData,
+        );
 
-          return night;
-        }),
-      );
+        setMovieNights(
+          movieNights.map((night) => {
+            if (night.id === editingMovieNightId) {
+              return updatedNight;
+            }
+
+            return night;
+          }),
+        );
+      } catch (error) {
+        console.error(error);
+      }
     } else {
-      const newMovieNight = {
-        id: crypto.randomUUID(),
-        title: movieNight.title.trim(),
-        date: movieNight.date,
-        location: movieNight.location.trim(),
-        notes: movieNight.notes.trim(),
-        movies: [],
-        guests: [],
-        snacks: [],
-      };
+      try {
+        const createdNight = await createMovieNight(movieNightData);
 
-      setMovieNights([...movieNights, newMovieNight]);
+        setMovieNights([...movieNights, createdNight]);
+      } catch (error) {
+        console.error(error);
+      }
     }
 
     setEditingMovieNightId(null);
@@ -291,8 +303,18 @@ function App() {
     });
   }
 
-  function handleDeleteMovieNight(movieNightId) {
-    setMovieNights(movieNights.filter((night) => night.id !== movieNightId));
+  async function handleDeleteMovieNight(movieNightId) {
+    try {
+      await deleteMovieNight(movieNightId);
+
+      setMovieNights(
+        movieNights.filter((night) => {
+          return night.id !== movieNightId;
+        }),
+      );
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   function handleSelectMovieNight(movieNightId) {
@@ -302,6 +324,7 @@ function App() {
       setSelectedMovieNightId(movieNightId);
     }
   }
+
   function handleStartEditMovieNight(night) {
     setEditingMovieNightId(night.id);
 
@@ -385,44 +408,44 @@ function App() {
   }
 
   async function handleSaveMovieReview(movie) {
-  const watchedMovie = {
-    ...movie,
-    userRating: movieReview.rating,
-    review: movieReview.review,
-    watchedAt: new Date().toISOString(),
-  };
+    const watchedMovie = {
+      ...movie,
+      userRating: movieReview.rating,
+      review: movieReview.review,
+      watchedAt: new Date().toISOString(),
+    };
 
-  const movieAlreadyWatched = watchedMovies.some((watchedMovie) => {
-    return watchedMovie.id === movie.id;
-  });
-
-  try {
-    if (movieAlreadyWatched) {
-      const updatedMovie = await updateWatchedMovie(movie.id, watchedMovie);
-
-      setWatchedMovies(
-        watchedMovies.map((existingMovie) => {
-          if (existingMovie.id === movie.id) {
-            return updatedMovie;
-          }
-
-          return existingMovie;
-        }),
-      );
-    } else {
-      const savedMovie = await addWatchedMovie(watchedMovie);
-
-      setWatchedMovies([...watchedMovies, savedMovie]);
-    }
-
-    setMovieReview({
-      rating: "",
-      review: "",
+    const movieAlreadyWatched = watchedMovies.some((watchedMovie) => {
+      return watchedMovie.id === movie.id;
     });
-  } catch (error) {
-    console.error(error);
+
+    try {
+      if (movieAlreadyWatched) {
+        const updatedMovie = await updateWatchedMovie(movie.id, watchedMovie);
+
+        setWatchedMovies(
+          watchedMovies.map((existingMovie) => {
+            if (existingMovie.id === movie.id) {
+              return updatedMovie;
+            }
+
+            return existingMovie;
+          }),
+        );
+      } else {
+        const savedMovie = await addWatchedMovie(watchedMovie);
+
+        setWatchedMovies([...watchedMovies, savedMovie]);
+      }
+
+      setMovieReview({
+        rating: "",
+        review: "",
+      });
+    } catch (error) {
+      console.error(error);
+    }
   }
-}
 
   async function handleRemoveWatchedMovie(movieId) {
     try {
