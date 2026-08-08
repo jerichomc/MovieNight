@@ -20,6 +20,8 @@ import {
   createMovieNight,
   updateMovieNight,
   deleteMovieNight,
+  addMovieToMovieNight,
+  deleteMovieFromMovieNight,
 } from "./api/backend.js";
 
 function App() {
@@ -336,51 +338,41 @@ useEffect(() => {
     });
   }
 
-  function handleAddMovieToNight(movieNightId, movie) {
+  async function handleAddMovieToNight(movieNightId, movie) {
+  try {
+    const updatedNight = await addMovieToMovieNight(movieNightId, movie);
+
     setMovieNights(
       movieNights.map((night) => {
-        if (night.id !== movieNightId) {
-          return night;
+        if (night.id === movieNightId) {
+          return updatedNight;
         }
 
-        const currentMovies = night.movies || [];
-
-        const movieAlreadyAdded = currentMovies.some((savedMovie) => {
-          return savedMovie.id === movie.id;
-        });
-
-        if (movieAlreadyAdded) {
-          return night;
-        }
-
-        return {
-          ...night,
-          movies: [...currentMovies, movie],
-        };
+        return night;
       }),
     );
+  } catch (error) {
+    console.error(error);
   }
+}
 
-  function handleDeleteFromMovieNight(movieNightId, movieId) {
+  async function handleDeleteFromMovieNight(movieNightId, movieId) {
+  try {
+    const updatedNight = await deleteMovieFromMovieNight(movieNightId, movieId);
+
     setMovieNights(
       movieNights.map((night) => {
-        if (night.id !== movieNightId) {
-          //if no match return as is
-          return night;
+        if (night.id === movieNightId) {
+          return updatedNight;
         }
 
-        const currentMovies = night.movies || [];
-        const updatedMovies = currentMovies.filter(
-          (movie) => movie.id !== movieId,
-        ); //filter out movie with given id
-
-        return {
-          ...night,
-          movies: updatedMovies,
-        };
+        return night;
       }),
     );
+  } catch (error) {
+    console.error(error);
   }
+}
 
   function handleStartReview(movie, options = {}) {
     setMovieReview({

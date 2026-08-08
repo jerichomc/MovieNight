@@ -155,3 +155,37 @@ export async function deleteMovieNight(movieNightId) {
     throw new Error("Failed to delete movie night");
   }
 }
+
+export async function addMovieToMovieNight(movieNightId, movie) {
+  const response = await fetch(
+    `${API_BASE_URL}/api/movie-nights/${movieNightId}/movies`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(movie),
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to add movie to movie night");
+  }
+
+  return response.json();
+} 
+
+export async function deleteMovieFromMovieNight(movieNightId, movieId) {
+  const response = await fetch(
+    `${API_BASE_URL}/api/movie-nights/${movieNightId}/movies/${movieId}`,
+    {
+      method: "DELETE",
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to remove movie from movie night");
+  }
+
+  return response.json();
+}
