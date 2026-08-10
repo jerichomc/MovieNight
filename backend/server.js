@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import watchlistRoutes from "./routes/watchlistRoutes.js";
 import watchedRoutes from "./routes/watchedRoutes.js";
 import movieNightRoutes from "./routes/movieNightRoutes.js";
+import pool from "./db/pool.js";
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ app.get("/api/health", (req, res) => {
         message: "Movie Night API is running",
     });
 });
+
 
 app.listen(PORT, () => {
     console.log(`Server is running on ${PORT}`);
