@@ -37,7 +37,16 @@ router.post("/", async (req, res) => {
       `INSERT INTO saved_movies
        (tmdb_id, title, release_date, poster_path, overview, vote_average, popularity)
        VALUES ($1, $2, $3, $4, $5, $6, $7)
-       RETURNING *`,
+       RETURNING
+        tmdb_id AS id,
+        title,
+        release_date,
+        poster_path,
+        overview,
+        vote_average,
+        popularity,
+        created_at
+      `,
       [
         movie.id,
         movie.title,
@@ -46,7 +55,7 @@ router.post("/", async (req, res) => {
         movie.overview,
         movie.vote_average,
         movie.popularity,
-      ],
+      ]
     );
 
     res.status(201).json(result.rows[0]);

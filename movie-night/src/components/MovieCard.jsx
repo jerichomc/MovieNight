@@ -3,8 +3,9 @@ function MovieCard({movie, children}) { // The MovieCard component takes in a mo
 
     const releaseYear = movie.release_date ? movie.release_date.slice(0, 4) : "NA"; // Extract the release year from the movie's release_date, or set it to "N/A" if release_date is not available
 
-    const hasTmdbRating = movie.vote_average !== null && movie.vote_average !== undefined;
-    const rating = hasTmdbRating ? movie.vote_average.toFixed(1) : "Not Rated";
+    const numericRating = Number(movie.vote_average);
+    const hasTmdbRating = !Number.isNaN(numericRating);
+    const rating = hasTmdbRating ? numericRating.toFixed(1) : "Not Rated";
 
     function getRatingEmoji(rating) {
         if (rating >= 7) {
@@ -16,7 +17,7 @@ function MovieCard({movie, children}) { // The MovieCard component takes in a mo
         return "🤢"
     }
 
-    const ratingEmoji = hasTmdbRating ? getRatingEmoji(movie.vote_average) : ""; // Get the appropriate emoji based on the movie's rating, or set it to an empty string if vote_average is not available
+    const ratingEmoji = hasTmdbRating ? getRatingEmoji(numericRating) : "";
 
     return (
         <li className="movie-card">

@@ -16,6 +16,7 @@ function PlannerPage({
 }) {
   const [watchlistSearchTerm, setWatchlistSearchTerm] = useState("");
   const [submittedWatchlistSearch, setSubmittedWatchlistSearch] = useState("");
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
   const filteredWatchlist = watchlist.filter((movie) => {
     return movie.title
@@ -36,55 +37,60 @@ function PlannerPage({
         <h1>Movie Night Planner</h1>
       </header>
 
-      <section className="planner-section">
-        <form className="planner-form" onSubmit={onCreateMovieNight}>
-          <label>
-            Night title
-            <input
-              type="text"
-              name="title"
-              value={movieNight.title}
-              onChange={onMovieNightChange}
-              placeholder="Friday horror night"
-            />
-          </label>
+      <button type="button" onClick={() => isFormOpen ? setIsFormOpen(false) : setIsFormOpen(true)}>
+        + Movie Night
+      </button>
+      {isFormOpen && (
+        <section className="planner-section">
+          <form className="planner-form" onSubmit={onCreateMovieNight}>
+            <label>
+              Night title
+              <input
+                type="text"
+                name="title"
+                value={movieNight.title}
+                onChange={onMovieNightChange}
+                placeholder="Friday horror night"
+              />
+            </label>
 
-          <label>
-            Date
-            <input
-              type="date"
-              name="date"
-              value={movieNight.date}
-              onChange={onMovieNightChange}
-            />
-          </label>
+            <label>
+              Date
+              <input
+                type="date"
+                name="date"
+                value={movieNight.date}
+                onChange={onMovieNightChange}
+              />
+            </label>
 
-          <label>
-            Location
-            <input
-              type="text"
-              name="location"
-              value={movieNight.location}
-              onChange={onMovieNightChange}
-              placeholder="Apartment"
-            />
-          </label>
+            <label>
+              Location
+              <input
+                type="text"
+                name="location"
+                value={movieNight.location}
+                onChange={onMovieNightChange}
+                placeholder="Apartment"
+              />
+            </label>
 
-          <label>
-            Notes
-            <textarea
-              name="notes"
-              value={movieNight.notes}
-              onChange={onMovieNightChange}
-              placeholder="Bring snacks"
-            />
-          </label>
+            <label>
+              Notes
+              <textarea
+                name="notes"
+                value={movieNight.notes}
+                onChange={onMovieNightChange}
+                placeholder="Bring snacks"
+              />
+            </label>
 
-          <button type="submit">
-            {editingMovieNightId ? "Update Movie Night" : "Save Movie Night"}
-          </button>
-        </form>
-      </section>
+            <button type="submit">
+              {editingMovieNightId ? "Update Movie Night" : "Save Movie Night"}
+            </button>
+          </form>
+        </section>
+      )}
 
       <section className="saved-nights-section">
         <h2>Saved Movie Nights</h2>
@@ -132,7 +138,6 @@ function PlannerPage({
                         <h4>Movie Options</h4>
 
                         <div className="movie-night-selected-movies">
-
                           {night.movies && night.movies.length > 0 ? (
                             <ul>
                               {night.movies.map((movie) => (
@@ -140,7 +145,9 @@ function PlannerPage({
                                   {movie.title}
                                   <button
                                     type="button"
-                                    onClick={() => onDeleteFromMovieNight(night.id, movie.id)}
+                                    onClick={() =>
+                                      onDeleteFromMovieNight(night.id, movie.id)
+                                    }
                                   >
                                     Remove
                                   </button>
