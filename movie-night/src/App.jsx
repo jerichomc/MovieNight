@@ -72,18 +72,18 @@ function App() {
   });
   const [movieNights, setMovieNights] = useState([]);
 
-useEffect(() => {
-  async function loadMovieNights() {
-    try {
-      const data = await getMovieNights();
-      setMovieNights(data);
-    } catch (error) {
-      console.error(error);
+  useEffect(() => {
+    async function loadMovieNights() {
+      try {
+        const data = await getMovieNights();
+        setMovieNights(data);
+      } catch (error) {
+        console.error(error);
+      }
     }
-  }
 
-  loadMovieNights();
-}, []);
+    loadMovieNights();
+  }, []);
 
   const [selectedMovieNightId, setSelectedMovieNightId] = useState(null);
 
@@ -239,6 +239,17 @@ useEffect(() => {
     });
   }
 
+  function handleClearMovieNightForm() {
+    setEditingMovieNightId(null);
+
+    setMovieNight({
+      title: "",
+      date: "",
+      location: "",
+      notes: "",
+    });
+  }
+
   const sortedMovies = [...movies].sort((a, b) => {
     if (sortBy === "popularity") {
       return b.popularity - a.popularity; // Sort movies by popularity in descending order
@@ -339,49 +350,54 @@ useEffect(() => {
   }
 
   async function handleAddMovieToNight(movieNightId, movie) {
-  try {
-    const updatedNight = await addMovieToMovieNight(movieNightId, movie);
+    try {
+      const updatedNight = await addMovieToMovieNight(movieNightId, movie);
 
-    setMovieNights(
-      movieNights.map((night) => {
-        if (night.id === movieNightId) {
-          return updatedNight;
-        }
+      setMovieNights(
+        movieNights.map((night) => {
+          if (night.id === movieNightId) {
+            return updatedNight;
+          }
 
-        return night;
-      }),
-    );
-  } catch (error) {
-    console.error(error);
+          return night;
+        }),
+      );
+    } catch (error) {
+      console.error(error);
+    }
   }
-}
 
   async function handleDeleteFromMovieNight(movieNightId, movieId) {
-  try {
-    const updatedNight = await deleteMovieFromMovieNight(movieNightId, movieId);
+    try {
+      const updatedNight = await deleteMovieFromMovieNight(movieNightId, movieId);
 
-    setMovieNights(
-      movieNights.map((night) => {
-        if (night.id === movieNightId) {
-          return updatedNight;
-        }
+      setMovieNights(
+        movieNights.map((night) => {
+          if (night.id === movieNightId) {
+            return updatedNight;
+          }
 
-        return night;
-      }),
-    );
-  } catch (error) {
-    console.error(error);
+          return night;
+        }),
+      );
+    } catch (error) {
+      console.error(error);
+    }
   }
-}
 
   function handleStartReview(movie, options = {}) {
+    const existingWatchedMovie = watchedMovies.find((watchedMovie) => {
+      return watchedMovie.id === movie.id;
+    });
+    const reviewMovie = existingWatchedMovie || movie;
+
     setMovieReview({
-      rating: movie.userRating || "",
-      review: movie.review || "",
+      rating: reviewMovie.userRating || "",
+      review: reviewMovie.review || "",
     });
 
     setReviewContext({
-      movie,
+      movie: reviewMovie,
       returnPath: options.returnPath || location.pathname,
       removeFromWatchlist: options.removeFromWatchlist || false,
     });
@@ -569,6 +585,7 @@ useEffect(() => {
                 onSelectMovieNight={handleSelectMovieNight}
                 editingMovieNightId={editingMovieNightId}
                 onStartEditMovieNight={handleStartEditMovieNight}
+                onClearMovieNightForm={handleClearMovieNightForm}
                 onAddToMovieNight={handleAddMovieToNight}
                 onDeleteFromMovieNight={handleDeleteFromMovieNight}
                 watchlist={watchlist}

@@ -9,6 +9,7 @@ function PlannerPage({
   selectedMovieNight,
   onSelectMovieNight,
   onStartEditMovieNight,
+  onClearMovieNightForm,
   editingMovieNightId,
   watchlist,
   onAddToMovieNight,
@@ -31,18 +32,47 @@ function PlannerPage({
     setSubmittedWatchlistSearch(watchlistSearchTerm.trim());
   }
 
+  async function handleMovieNightSubmit(event) {
+    event.preventDefault();
+
+    if (!movieNight.title.trim()) {
+      return;
+    }
+
+    await onCreateMovieNight(event);
+    setIsFormOpen(false);
+  }
+
+  function handleOpenCreateForm() {
+    onClearMovieNightForm();
+    setIsFormOpen(true);
+  }
+
+  function handleCloseForm() {
+    onClearMovieNightForm();
+    setIsFormOpen(false);
+  }
+
+  function handleStartEdit(night) {
+    onStartEditMovieNight(night);
+    setIsFormOpen(true);
+  }
+
   return (
     <>
       <header className="page-header">
         <h1>Movie Night Planner</h1>
       </header>
 
-      <button type="button" onClick={() => isFormOpen ? setIsFormOpen(false) : setIsFormOpen(true)}>
-        + Movie Night
-      </button>
+      {!isFormOpen && (
+        <button type="button" onClick={handleOpenCreateForm}>
+          + Movie Night
+        </button>
+      )}
+
       {isFormOpen && (
         <section className="planner-section">
-          <form className="planner-form" onSubmit={onCreateMovieNight}>
+          <form className="planner-form" onSubmit={handleMovieNightSubmit}>
             <label>
               Night title
               <input
@@ -88,6 +118,10 @@ function PlannerPage({
             <button type="submit">
               {editingMovieNightId ? "Update Movie Night" : "Save Movie Night"}
             </button>
+
+            <button type="button" onClick={handleCloseForm}>
+              Cancel
+            </button>
           </form>
         </section>
       )}
@@ -114,7 +148,7 @@ function PlannerPage({
 
                     <button
                       type="button"
-                      onClick={() => onStartEditMovieNight(night)}
+                      onClick={() => handleStartEdit(night)}
                     >
                       Edit
                     </button>
@@ -196,7 +230,10 @@ function PlannerPage({
                             )}
                           </>
                         ) : (
-                          <p>Add movies to your watchlist first.</p>
+                          <p>
+                            Your watchlist is empty. Add movies to your
+                            watchlist before adding movie options.
+                          </p>
                         )}
                       </div>
                     </div>
