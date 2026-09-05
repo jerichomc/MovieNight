@@ -122,6 +122,16 @@ function App() {
     }
   }, [location.pathname]);
 
+  const [currentUser, setCurrentUser] = useState(null);
+  const [authToken, setAuthToken] = useState("");
+  const [authMode, setAuthMode] = useState("login");
+  const [authForm, setAuthForm] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
+  const [authError, setAuthError] = useState("");
+
   async function handleSearch(event) {
     event.preventDefault(); // Prevent the default form submission behavior
     const trimmedSearch = searchTerm.trim(); // Trim whitespace from the search term before sending it to the API
@@ -369,7 +379,10 @@ function App() {
 
   async function handleDeleteFromMovieNight(movieNightId, movieId) {
     try {
-      const updatedNight = await deleteMovieFromMovieNight(movieNightId, movieId);
+      const updatedNight = await deleteMovieFromMovieNight(
+        movieNightId,
+        movieId,
+      );
 
       setMovieNights(
         movieNights.map((night) => {
@@ -496,6 +509,32 @@ function App() {
 
     navigate(returnPath);
   }
+
+  function handleAuthFormChange(event) {
+  const { name, value } = event.target;
+
+  setAuthForm({
+    ...authForm,
+    [name]: value,
+  });
+}
+
+function handleAuthModeChange(nextMode) {
+  setAuthMode(nextMode);
+  setAuthError("");
+  setAuthForm({
+    username: "",
+    email: "",
+    password: "",
+  });
+}
+
+function handleLogout() {
+  setCurrentUser(null);
+  setAuthToken("");
+}
+
+
 
   return (
     <>
