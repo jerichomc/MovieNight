@@ -12,6 +12,7 @@ function Navbar(){
                 <NavLink to="/watchlist">Watchlist</NavLink>
                 <NavLink to="/watched">Films</NavLink>
                 <NavLink to="/planner">Planner</NavLink>
+                <NavLink to="/auth">Login</NavLink>
             </div>
         </nav>
     );

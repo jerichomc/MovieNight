@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { searchMovies } from "./api/tmdb.js"; // Import the searchMovies function from the TMDB API module
 import Navbar from "./components/Navbar.jsx";
+import AuthPage from "./pages/AuthPage.jsx";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import SearchPage from "./pages/SearchPage.jsx";
 import WatchlistPage from "./pages/WatchlistPage.jsx";
@@ -22,6 +23,8 @@ import {
   deleteMovieNight,
   addMovieToMovieNight,
   deleteMovieFromMovieNight,
+  registerUser,
+  loginUser,
 } from "./api/backend.js";
 
 function App() {
@@ -511,30 +514,66 @@ function App() {
   }
 
   function handleAuthFormChange(event) {
-  const { name, value } = event.target;
+    const { name, value } = event.target;
 
-  setAuthForm({
-    ...authForm,
-    [name]: value,
-  });
-}
+    setAuthForm({
+      ...authForm,
+      [name]: value,
+    });
+  }
 
-function handleAuthModeChange(nextMode) {
-  setAuthMode(nextMode);
-  setAuthError("");
-  setAuthForm({
-    username: "",
-    email: "",
-    password: "",
-  });
-}
+  function handleAuthModeChange(nextMode) {
+    setAuthMode(nextMode);
+    setAuthError("");
+    setAuthForm({
+      username: "",
+      email: "",
+      password: "",
+    });
+  }
 
-function handleLogout() {
-  setCurrentUser(null);
-  setAuthToken("");
-}
+  function handleLogout() {
+    setCurrentUser(null);
+    setAuthToken("");
+  }
 
+  async function handleAuthSubmit(event) {
+    event.preventDefault();
+    setAuthError("");
 
+    try {
+      let data; // this will hold the response data from either registerUser or loginUser
+
+      if (authMode === "register") {
+        data = await registerUser(authForm);
+      } else {
+        //if login mode, call loginUser
+        data = await loginUser({
+          email: authForm.email,
+          password: authForm.password,
+        });
+      }
+
+      setCurrentUser(data.user); // Set the current user which it gets from the backend response
+      setAuthToken(data.token);
+
+      setAuthForm({
+        username: "",
+        email: "",
+        password: "",
+      });
+
+      navigate("/");
+    } catch (error) {
+      console.error(error);
+
+      if (authMode === "register") {
+        setAuthError("Could not create account.");
+      } else {
+        setAuthError("Could not log in.");
+      }
+    }
+  }
 
   return (
     <>
@@ -628,6 +667,20 @@ function handleLogout() {
                 onAddToMovieNight={handleAddMovieToNight}
                 onDeleteFromMovieNight={handleDeleteFromMovieNight}
                 watchlist={watchlist}
+              />
+            }
+          />
+
+          <Route
+            path="/auth"
+            element={
+              <AuthPage
+                authMode={authMode}
+                authForm={authForm}
+                authError={authError}
+                onAuthFormChange={handleAuthFormChange}
+                onAuthSubmit={handleAuthSubmit}
+                onAuthModeChange={handleAuthModeChange}
               />
             }
           />
