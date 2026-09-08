@@ -125,8 +125,26 @@ function App() {
     }
   }, [location.pathname]);
 
-  const [currentUser, setCurrentUser] = useState(null);
-  const [authToken, setAuthToken] = useState("");
+  const [currentUser, setCurrentUser] = useState(() => {
+    const savedUser = localStorage.getItem("movieNightUser");
+    if(savedUser){
+      return JSON.parse(savedUser);
+    }
+    return null;
+  });
+  const [authToken, setAuthToken] = useState(() => {
+    return localStorage.getItem("movieNightToken") || "";
+  });
+  useEffect(() => {
+  if (currentUser && authToken) {
+    localStorage.setItem("movieNightUser", JSON.stringify(currentUser));
+    localStorage.setItem("movieNightToken", authToken);
+  } else {
+    localStorage.removeItem("movieNightUser");
+    localStorage.removeItem("movieNightToken");
+  }
+}, [currentUser, authToken]);
+
   const [authMode, setAuthMode] = useState("login");
   const [authForm, setAuthForm] = useState({
     username: "",
@@ -577,7 +595,7 @@ function App() {
 
   return (
     <>
-      <Navbar />
+      <Navbar currentUser={currentUser} onLogout={handleLogout} />
       <p>{apiStatus}</p>
 
       <main>
