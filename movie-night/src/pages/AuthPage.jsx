@@ -2,11 +2,30 @@ function AuthPage({
   authMode,
   authForm,
   authError,
+  currentUser,
   onAuthFormChange,
   onAuthSubmit,
   onAuthModeChange,
+  onLogout,
 }) {
   const isRegisterMode = authMode === "register"; // this variable is true if the current mode is "register", otherwise false
+
+  if(currentUser) {
+    return (
+      <>
+        <header className="page-header">
+          <h1>Account</h1>
+          <p>You are logged in as {currentUser.username}.</p>
+        </header>
+
+        <section className="auth-section">
+          <button type="button" onClick={onLogout}>
+            Log Out
+          </button>
+        </section>
+      </>
+    );
+  }
 
   return (
     <>

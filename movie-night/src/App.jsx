@@ -696,9 +696,11 @@ function App() {
                 authMode={authMode}
                 authForm={authForm}
                 authError={authError}
+                currentUser={currentUser}
                 onAuthFormChange={handleAuthFormChange}
                 onAuthSubmit={handleAuthSubmit}
                 onAuthModeChange={handleAuthModeChange}
+                onLogout={handleLogout}
               />
             }
           />
