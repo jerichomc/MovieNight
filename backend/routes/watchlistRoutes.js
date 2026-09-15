@@ -1,9 +1,10 @@
 import express from "express";
 import pool from "../db/pool.js";
+import { authenticateToken } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
+router.get("/", authenticateToken, async (req, res) => {
   try {
     const result = await pool.query(
       `SELECT
@@ -16,7 +17,9 @@ router.get("/", async (req, res) => {
      popularity,
      created_at
    FROM saved_movies
+   WHERE user_id = $1
    ORDER BY created_at DESC`,
+      [req.user.userId],
     );
 
     res.json(result.rows);
@@ -29,25 +32,25 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.post("/", async (req, res) => {
+router.post("/", authenticateToken, async (req, res) => {
   const movie = req.body;
 
   try {
     const result = await pool.query(
       `INSERT INTO saved_movies
-       (tmdb_id, title, release_date, poster_path, overview, vote_average, popularity)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
-       RETURNING
-        tmdb_id AS id,
-        title,
-        release_date,
-        poster_path,
-        overview,
-        vote_average,
-        popularity,
-        created_at
-      `,
+   (user_id, tmdb_id, title, release_date, poster_path, overview, vote_average, popularity)
+   VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+   RETURNING
+     tmdb_id AS id,
+     title,
+     release_date,
+     poster_path,
+     overview,
+     vote_average,
+     popularity,
+     created_at`,
       [
+        req.user.userId,
         movie.id,
         movie.title,
         movie.release_date,
@@ -55,7 +58,7 @@ router.post("/", async (req, res) => {
         movie.overview,
         movie.vote_average,
         movie.popularity,
-      ]
+      ],
     );
 
     res.status(201).json(result.rows[0]);
@@ -74,11 +77,14 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authenticateToken, async (req, res) => {
   const tmdbId = Number(req.params.id);
 
   try {
-    await pool.query("DELETE FROM saved_movies WHERE tmdb_id = $1", [tmdbId]);
+    await pool.query(
+      "DELETE FROM saved_movies WHERE user_id = $1 AND tmdb_id = $2",
+      [req.user.userId, tmdbId],
+    );
 
     res.status(204).send();
   } catch (error) {
