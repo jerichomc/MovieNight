@@ -10,8 +10,12 @@ export async function checkApiHealth() {
     return response.json();
 }
 
-export async function getWatchlist() {
-  const response = await fetch(`${API_BASE_URL}/api/watchlist`);
+export async function getWatchlist(authToken) {
+  const response = await fetch(`${API_BASE_URL}/api/watchlist`, {
+    headers: {
+      Authorization: `Bearer ${authToken}`,
+    },
+  });
 
   if (!response.ok) {
     throw new Error("Failed to load watchlist");
@@ -20,11 +24,12 @@ export async function getWatchlist() {
   return response.json();
 }
 
-export async function addMovieToWatchlist(movie) {
+export async function addMovieToWatchlist(movie, authToken) {
     const response = await fetch(`${API_BASE_URL}/api/watchlist`, { // Add a movie to the watchlist
         method: 'POST', // Specify the HTTP method as POST
         headers: { // Set the request headers
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${authToken}`
         },
         body: JSON.stringify(movie)
     });
@@ -36,9 +41,12 @@ export async function addMovieToWatchlist(movie) {
     return response.json(); // Return the added movie as JSON
 }
 
-export async function deleteMovieFromWatchlist(movieId){
+export async function deleteMovieFromWatchlist(movieId, authToken){
     const response = await fetch(`${API_BASE_URL}/api/watchlist/${movieId}`, { // Delete a movie from the watchlist
-        method: 'DELETE' // Specify the HTTP method as DELETE
+        method: 'DELETE', // Specify the HTTP method as DELETE
+        headers: {
+            Authorization: `Bearer ${authToken}`
+        }
     });
 
     if (!response.ok) {
