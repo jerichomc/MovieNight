@@ -50,18 +50,6 @@ function App() {
     loadApiStatus();
   }, []);
   const [watchlist, setWatchlist] = useState([]);
-  useEffect(() => {
-    //this uses backend to retrieve watchlist and sets it to state on load
-    async function loadWatchlist() {
-      try {
-        const data = await getWatchlist();
-        setWatchlist(data);
-      } catch (error) {
-        console.error(error);
-      }
-    }
-    loadWatchlist();
-  }, []);
 
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [sortBy, setSortBy] = useState("popularity"); // State to track the current sorting option for the movie list, defaulting to sorting by popularity in descending order
@@ -135,6 +123,26 @@ function App() {
   const [authToken, setAuthToken] = useState(() => {
     return localStorage.getItem("movieNightToken") || "";
   });
+
+  useEffect(() => {
+    // Retrieve the current user's watchlist whenever their login token changes.
+    async function loadWatchlist() {
+      if (!authToken) {
+        setWatchlist([]);
+        return;
+      }
+
+      try {
+        const data = await getWatchlist(authToken);
+        setWatchlist(data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    loadWatchlist();
+  }, [authToken]);
+
   useEffect(() => {
   if (currentUser && authToken) {
     localStorage.setItem("movieNightUser", JSON.stringify(currentUser));
@@ -214,6 +222,10 @@ function App() {
   }
 
   async function handleAddToWatchlist(movie) {
+    if (!authToken) {
+      navigate("/auth"); // Redirect to the authentication page if the user is not logged in
+      return;
+    }
     const movieAlreadySaved = watchlist.some((savedMovie) => {
       //check if any movie matches id
       return savedMovie.id === movie.id;
@@ -223,7 +235,7 @@ function App() {
     }
 
     try {
-      const savedMovie = await addMovieToWatchlist(movie); //try adding from backend
+      const savedMovie = await addMovieToWatchlist(movie, authToken); //try adding from backend
       setWatchlist([...watchlist, savedMovie]);
     } catch (error) {
       console.error(error);
@@ -232,7 +244,7 @@ function App() {
 
   async function handleRemoveFromWatchlist(movieId) {
     try {
-      await deleteMovieFromWatchlist(movieId);
+      await deleteMovieFromWatchlist(movieId, authToken);
 
       setWatchlist(
         watchlist.filter((movie) => {
