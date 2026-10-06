@@ -85,18 +85,6 @@ function App() {
 
   const [watchedMovies, setWatchedMovies] = useState([]);
 
-  useEffect(() => {
-    async function loadWatchedMovies() {
-      try {
-        const data = await getWatchedMovies();
-        setWatchedMovies(data);
-      } catch (error) {
-        console.error(error);
-      }
-    }
-    loadWatchedMovies(); // Load watched movies from the backend when the component mounts
-  }, []);
-
   const [movieReview, setMovieReview] = useState({
     rating: "",
     review: "",
@@ -141,6 +129,24 @@ function App() {
     }
 
     loadWatchlist();
+  }, [authToken]);
+
+  useEffect(() => {
+    async function loadWatchedMovies() {
+      if (!authToken) {
+        setWatchedMovies([]);
+        return;
+      }
+
+      try {
+        const data = await getWatchedMovies(authToken);
+        setWatchedMovies(data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    loadWatchedMovies();
   }, [authToken]);
 
   useEffect(() => {
@@ -432,6 +438,11 @@ function App() {
   }
 
   function handleStartReview(movie, options = {}) {
+    if (!authToken) {
+      navigate("/auth");
+      return;
+    }
+
     const existingWatchedMovie = watchedMovies.find((watchedMovie) => {
       return watchedMovie.id === movie.id;
     });
@@ -475,7 +486,11 @@ function App() {
 
     try {
       if (movieAlreadyWatched) {
-        const updatedMovie = await updateWatchedMovie(movie.id, watchedMovie);
+        const updatedMovie = await updateWatchedMovie(
+          movie.id,
+          watchedMovie,
+          authToken,
+        );
 
         setWatchedMovies(
           watchedMovies.map((existingMovie) => {
@@ -487,7 +502,7 @@ function App() {
           }),
         );
       } else {
-        const savedMovie = await addWatchedMovie(watchedMovie);
+        const savedMovie = await addWatchedMovie(watchedMovie, authToken);
 
         setWatchedMovies([...watchedMovies, savedMovie]);
       }
@@ -503,7 +518,7 @@ function App() {
 
   async function handleRemoveWatchedMovie(movieId) {
     try {
-      await deleteWatchedMovie(movieId);
+      await deleteWatchedMovie(movieId, authToken);
 
       setWatchedMovies(
         watchedMovies.filter((movie) => {

@@ -1,11 +1,12 @@
 import express from "express";
 import pool from "../db/pool.js";
+import { authenticateToken } from "../middleware/authMiddleware.js"
 
 const router = express.Router();
 
 
 
-router.get("/", async (req, res) => {
+router.get("/", authenticateToken, async (req, res) => {
   try {
     const result = await pool.query(
       `SELECT
@@ -22,7 +23,9 @@ router.get("/", async (req, res) => {
          created_at,
          updated_at
        FROM watched_movies
+       WHERE user_id = $1
        ORDER BY watched_at DESC NULLS LAST, created_at DESC`,
+      [req.user.userId],
     );
 
     res.json(result.rows);
@@ -35,14 +38,14 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.post("/", async (req, res) => {
+router.post("/", authenticateToken, async (req, res) => {
   const movie = req.body;
 
   try {
     const result = await pool.query(
       `INSERT INTO watched_movies
-       (tmdb_id, title, release_date, poster_path, overview, vote_average, popularity, user_rating, review, watched_at)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+       (user_id, tmdb_id, title, release_date, poster_path, overview, vote_average, popularity, user_rating, review, watched_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
        RETURNING
          tmdb_id AS id,
          title,
@@ -57,6 +60,7 @@ router.post("/", async (req, res) => {
          created_at,
          updated_at`,
       [
+        req.user.userId,
         movie.id,
         movie.title,
         movie.release_date,
@@ -65,9 +69,9 @@ router.post("/", async (req, res) => {
         movie.vote_average,
         movie.popularity,
         movie.userRating,
-        movie.review,
+        movie.review, 
         movie.watchedAt,
-      ],
+      ], 
     );
 
     res.status(201).json(result.rows[0]);
@@ -86,11 +90,11 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authenticateToken, async (req, res) => {
   const tmdbId = Number(req.params.id);
 
   try {
-    await pool.query("DELETE FROM watched_movies WHERE tmdb_id = $1", [tmdbId]);
+    await pool.query("DELETE FROM watched_movies WHERE user_id = $1 AND tmdb_id = $2", [req.user.userId, tmdbId]);
 
     res.status(204).send();
   } catch (error) {
@@ -102,7 +106,7 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-router.patch("/:id", async (req, res) => {
+router.patch("/:id", authenticateToken, async (req, res) => {
   const tmdbId = Number(req.params.id);
   const updatedFields = req.body;
 
@@ -114,7 +118,7 @@ router.patch("/:id", async (req, res) => {
          review = $2,
          watched_at = $3,
          updated_at = CURRENT_TIMESTAMP
-       WHERE tmdb_id = $4
+       WHERE user_id = $4 AND tmdb_id = $5
        RETURNING
          tmdb_id AS id,
          title,
@@ -132,6 +136,7 @@ router.patch("/:id", async (req, res) => {
         updatedFields.userRating,
         updatedFields.review,
         updatedFields.watchedAt,
+        req.user.userId,
         tmdbId,
       ],
     );

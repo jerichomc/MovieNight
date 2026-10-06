@@ -41,34 +41,39 @@ export async function addMovieToWatchlist(movie, authToken) {
     return response.json(); // Return the added movie as JSON
 }
 
-export async function deleteMovieFromWatchlist(movieId, authToken){
-    const response = await fetch(`${API_BASE_URL}/api/watchlist/${movieId}`, { // Delete a movie from the watchlist
-        method: 'DELETE', // Specify the HTTP method as DELETE
-        headers: {
-            Authorization: `Bearer ${authToken}`
-        }
-    });
+export async function deleteMovieFromWatchlist(movieId, authToken) {
+  const response = await fetch(`${API_BASE_URL}/api/watchlist/${movieId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${authToken}`,
+    },
+  });
 
-    if (!response.ok) {
-        throw new Error('Failed to delete movie from watchlist');
-    }
+  if (!response.ok) {
+    throw new Error("Failed to delete movie from watchlist");
+  }
 }
 
-export async function getWatchedMovies() {
-    const response = await fetch(`${API_BASE_URL}/api/watched`);
+export async function getWatchedMovies(authToken) {
+  const response = await fetch(`${API_BASE_URL}/api/watched`, {
+    headers: {
+      Authorization: `Bearer ${authToken}`,
+    },
+  });
 
-    if(!response.ok){
-        throw new Error('Failed to load watched movies');
-    }
+  if (!response.ok) {
+    throw new Error("Failed to load watched movies");
+  }
 
-    return response.json();
+  return response.json();
 }
 
-export async function addWatchedMovie(movie) {
+export async function addWatchedMovie(movie, authToken) {
     const response = await fetch(`${API_BASE_URL}/api/watched`, {
         method: 'POST',
         headers: {
-            'Content-Type' : 'application/json'
+            'Content-Type' : 'application/json',
+            Authorization: `Bearer ${authToken}`
         }, 
         body: JSON.stringify(movie) // Convert the movie object to a JSON string for the request body
     });
@@ -80,9 +85,12 @@ export async function addWatchedMovie(movie) {
     return response.json(); //parse saved movie returnd from backend
 }
 
-export async function deleteWatchedMovie(movieId){
+export async function deleteWatchedMovie(movieId, authToken){
     const response = await fetch(`${API_BASE_URL}/api/watched/${movieId}`, { // Delete a movie from the watchlist
-        method: 'DELETE' // Specify the HTTP method as DELETE
+        method: 'DELETE', // Specify the HTTP method as DELETE
+        headers: {
+            Authorization: `Bearer ${authToken}`
+        }
     });
 
     if(!response.ok) {
@@ -90,11 +98,12 @@ export async function deleteWatchedMovie(movieId){
     }
 }
 
-export async function updateWatchedMovie(movieId, updatedFields){
+export async function updateWatchedMovie(movieId, updatedFields, authToken){
     const response = await fetch(`${API_BASE_URL}/api/watched/${movieId}`, {
         method: 'PATCH',
         headers: {
-            'Content-Type' : 'application/json'
+            'Content-Type' : 'application/json',
+            Authorization: `Bearer ${authToken}`
         },
         body: JSON.stringify(updatedFields)
     });
