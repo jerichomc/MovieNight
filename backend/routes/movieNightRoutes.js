@@ -1,11 +1,10 @@
 import express from "express";
 import pool from "../db/pool.js";
+import { authenticateToken } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-
-
-router.get("/", async (req, res) => {
+router.get("/", authenticateToken, async (req, res) => {
   try {
     const nightsResult = await pool.query(
       `SELECT
@@ -17,22 +16,28 @@ router.get("/", async (req, res) => {
          created_at,
          updated_at
        FROM movie_nights
+       WHERE user_id = $1
        ORDER BY created_at DESC`,
+      [req.user.userId],
     );
 
     const moviesResult = await pool.query(
       `SELECT
-         movie_night_id,
-         tmdb_id AS id,
-         title,
-         release_date,
-         poster_path,
-         overview,
-         vote_average,
-         popularity,
-         created_at
-       FROM movie_night_movies
-       ORDER BY created_at DESC`,
+         movie.movie_night_id,
+     movie.tmdb_id AS id,
+     movie.title,
+     movie.release_date,
+     movie.poster_path,
+     movie.overview,
+     movie.vote_average,
+     movie.popularity,
+     movie.created_at
+   FROM movie_night_movies AS movie
+   JOIN movie_nights AS night
+     ON night.id = movie.movie_night_id
+   WHERE night.user_id = $1
+   ORDER BY movie.created_at DESC`,
+      [req.user.userId],
     );
 
     const movieNights = nightsResult.rows.map((night) => {
@@ -56,14 +61,14 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.post("/", async (req, res) => {
+router.post("/", authenticateToken, async (req, res) => {
   const movieNight = req.body;
 
   try {
     const result = await pool.query(
       `INSERT INTO movie_nights
-       (title, date, location, notes)
-       VALUES ($1, $2, $3, $4)
+       (user_id, title, date, location, notes)
+       VALUES ($1, $2, $3, $4, $5)
        RETURNING
          id,
          title,
@@ -73,6 +78,7 @@ router.post("/", async (req, res) => {
          created_at,
          updated_at`,
       [
+        req.user.userId,
         movieNight.title,
         movieNight.date || null,
         movieNight.location,
@@ -95,7 +101,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.patch("/:id", async (req, res) => {
+router.patch("/:id", authenticateToken, async (req, res) => {
   const movieNightId = Number(req.params.id);
   const updatedFields = req.body;
 
@@ -108,7 +114,7 @@ router.patch("/:id", async (req, res) => {
          location = $3,
          notes = $4,
          updated_at = CURRENT_TIMESTAMP
-       WHERE id = $5
+       WHERE id = $5 AND user_id = $6
        RETURNING
          id,
          title,
@@ -123,6 +129,7 @@ router.patch("/:id", async (req, res) => {
         updatedFields.location,
         updatedFields.notes,
         movieNightId,
+        req.user.userId,
       ],
     );
 
@@ -161,11 +168,11 @@ router.patch("/:id", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authenticateToken, async (req, res) => {
   const movieNightId = Number(req.params.id);
 
   try {
-    await pool.query("DELETE FROM movie_nights WHERE id = $1", [movieNightId]);
+    await pool.query("DELETE FROM movie_nights WHERE id = $1 AND user_id = $2", [movieNightId, req.user.userId]);
 
     res.status(204).send();
   } catch (error) {
@@ -177,11 +184,24 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-router.post("/:id/movies", async (req, res) => {
+router.post("/:id/movies", authenticateToken, async (req, res) => {
   const movieNightId = Number(req.params.id);
   const movie = req.body;
 
   try {
+    const ownerResult = await pool.query(
+      `SELECT id
+       FROM movie_nights
+       WHERE id = $1 AND user_id = $2`,
+      [movieNightId, req.user.userId],
+    );
+
+    if (ownerResult.rows.length === 0) {
+      return res.status(404).json({
+        message: "Movie night not found",
+      });
+    }
+
     await pool.query(
       `INSERT INTO movie_night_movies
        (movie_night_id, tmdb_id, title, release_date, poster_path, overview, vote_average, popularity)
@@ -209,8 +229,8 @@ router.post("/:id/movies", async (req, res) => {
          created_at,
          updated_at
        FROM movie_nights
-       WHERE id = $1`,
-      [movieNightId],
+       WHERE id = $1 AND user_id = $2`,
+      [movieNightId, req.user.userId],
     );
 
     if (nightResult.rows.length === 0) {
@@ -248,11 +268,24 @@ router.post("/:id/movies", async (req, res) => {
   }
 });
 
-router.delete("/:id/movies/:movieId", async (req, res) => {
+router.delete("/:id/movies/:movieId", authenticateToken, async (req, res) => {
   const movieNightId = Number(req.params.id);
   const movieId = Number(req.params.movieId);
 
   try {
+    const ownerResult = await pool.query(
+      `SELECT id
+       FROM movie_nights
+       WHERE id = $1 AND user_id = $2`,
+      [movieNightId, req.user.userId],
+    );
+
+    if (ownerResult.rows.length === 0) {
+      return res.status(404).json({
+        message: "Movie night not found",
+      });
+    }
+
     await pool.query(
       `DELETE FROM movie_night_movies
        WHERE movie_night_id = $1 AND tmdb_id = $2`,
@@ -269,8 +302,8 @@ router.delete("/:id/movies/:movieId", async (req, res) => {
          created_at,
          updated_at
        FROM movie_nights
-       WHERE id = $1`,
-      [movieNightId],
+       WHERE id = $1 AND user_id = $2`,
+      [movieNightId, req.user.userId],
     );
 
     if (nightResult.rows.length === 0) {

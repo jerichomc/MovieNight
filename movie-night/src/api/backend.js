@@ -115,8 +115,12 @@ export async function updateWatchedMovie(movieId, updatedFields, authToken){
     return response.json(); //parse updated movie returned from backend
 }
 
-export async function getMovieNights() {
-  const response = await fetch(`${API_BASE_URL}/api/movie-nights`);
+export async function getMovieNights(authToken) {
+  const response = await fetch(`${API_BASE_URL}/api/movie-nights`, {
+    headers: {
+      Authorization: `Bearer ${authToken}`,
+    },
+  });
 
   if (!response.ok) {
     throw new Error("Failed to load movie nights");
@@ -125,11 +129,12 @@ export async function getMovieNights() {
   return response.json();
 }
 
-export async function createMovieNight(movieNight) {
+export async function createMovieNight(movieNight, authToken) {
   const response = await fetch(`${API_BASE_URL}/api/movie-nights`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${authToken}`,
     },
     body: JSON.stringify(movieNight),
   });
@@ -141,13 +146,14 @@ export async function createMovieNight(movieNight) {
   return response.json();
 }
 
-export async function updateMovieNight(movieNightId, updatedFields) {
+export async function updateMovieNight(movieNightId, updatedFields, authToken) {
   const response = await fetch(
     `${API_BASE_URL}/api/movie-nights/${movieNightId}`,
     {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
       },
       body: JSON.stringify(updatedFields),
     },
@@ -160,11 +166,14 @@ export async function updateMovieNight(movieNightId, updatedFields) {
   return response.json();
 }
 
-export async function deleteMovieNight(movieNightId) {
+export async function deleteMovieNight(movieNightId, authToken) {
   const response = await fetch(
     `${API_BASE_URL}/api/movie-nights/${movieNightId}`,
     {
       method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
     },
   );
 
@@ -173,13 +182,14 @@ export async function deleteMovieNight(movieNightId) {
   }
 }
 
-export async function addMovieToMovieNight(movieNightId, movie) {
+export async function addMovieToMovieNight(movieNightId, movie, authToken) {
   const response = await fetch(
     `${API_BASE_URL}/api/movie-nights/${movieNightId}/movies`,
     {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
       },
       body: JSON.stringify(movie),
     },
@@ -192,11 +202,14 @@ export async function addMovieToMovieNight(movieNightId, movie) {
   return response.json();
 } 
 
-export async function deleteMovieFromMovieNight(movieNightId, movieId) {
+export async function deleteMovieFromMovieNight(movieNightId, movieId, authToken) {
   const response = await fetch(
     `${API_BASE_URL}/api/movie-nights/${movieNightId}/movies/${movieId}`,
     {
       method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
     },
   );
 

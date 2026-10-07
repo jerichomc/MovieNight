@@ -63,19 +63,6 @@ function App() {
   });
   const [movieNights, setMovieNights] = useState([]);
 
-  useEffect(() => {
-    async function loadMovieNights() {
-      try {
-        const data = await getMovieNights();
-        setMovieNights(data);
-      } catch (error) {
-        console.error(error);
-      }
-    }
-
-    loadMovieNights();
-  }, []);
-
   const [selectedMovieNightId, setSelectedMovieNightId] = useState(null);
 
   const selectedMovieNight = movieNights.find((night) => {
@@ -147,6 +134,24 @@ function App() {
     }
 
     loadWatchedMovies();
+  }, [authToken]);
+
+  useEffect(() => {
+    async function loadMovieNights() {
+      if (!authToken) {
+        setMovieNights([]);
+        return;
+      }
+
+      try {
+        const data = await getMovieNights(authToken);
+        setMovieNights(data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    loadMovieNights();
   }, [authToken]);
 
   useEffect(() => {
@@ -315,6 +320,11 @@ function App() {
   async function handleCreateMovieNight(event) {
     event.preventDefault();
 
+    if (!authToken) {
+      navigate("/auth");
+      return;
+    }
+
     if (!movieNight.title.trim()) {
       return;
     }
@@ -331,6 +341,7 @@ function App() {
         const updatedNight = await updateMovieNight(
           editingMovieNightId,
           movieNightData,
+          authToken,
         );
 
         setMovieNights(
@@ -344,14 +355,16 @@ function App() {
         );
       } catch (error) {
         console.error(error);
+        return;
       }
     } else {
       try {
-        const createdNight = await createMovieNight(movieNightData);
+        const createdNight = await createMovieNight(movieNightData, authToken);
 
         setMovieNights([...movieNights, createdNight]);
       } catch (error) {
         console.error(error);
+        return;
       }
     }
 
@@ -367,7 +380,7 @@ function App() {
 
   async function handleDeleteMovieNight(movieNightId) {
     try {
-      await deleteMovieNight(movieNightId);
+      await deleteMovieNight(movieNightId, authToken);
 
       setMovieNights(
         movieNights.filter((night) => {
@@ -400,7 +413,11 @@ function App() {
 
   async function handleAddMovieToNight(movieNightId, movie) {
     try {
-      const updatedNight = await addMovieToMovieNight(movieNightId, movie);
+      const updatedNight = await addMovieToMovieNight(
+        movieNightId,
+        movie,
+        authToken,
+      );
 
       setMovieNights(
         movieNights.map((night) => {
@@ -421,6 +438,7 @@ function App() {
       const updatedNight = await deleteMovieFromMovieNight(
         movieNightId,
         movieId,
+        authToken,
       );
 
       setMovieNights(
