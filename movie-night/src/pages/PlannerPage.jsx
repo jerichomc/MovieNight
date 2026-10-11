@@ -212,18 +212,28 @@ function PlannerPage({
                               <p>Search your watchlist to add movie options.</p>
                             ) : filteredWatchlist.length > 0 ? (
                               <ul>
-                                {filteredWatchlist.map((movie) => (
-                                  <li key={movie.id}>
-                                    <button
-                                      type="button"
-                                      onClick={() =>
-                                        onAddToMovieNight(night.id, movie)
-                                      }
-                                    >
-                                      Add {movie.title}
-                                    </button>
-                                  </li>
-                                ))}
+                                {filteredWatchlist.map((movie) => {
+                                  const isAlreadyAdded = night.movies.some(
+                                    (nightMovie) => {
+                                      return nightMovie.id === movie.id;
+                                    },
+                                  );
+                                  return (
+                                    <li key={movie.id}>
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          onAddToMovieNight(night.id, movie)
+                                        }
+                                        disabled={isAlreadyAdded}
+                                      >
+                                        {isAlreadyAdded
+                                          ? "Added"
+                                          : `Add ${movie.title}`}
+                                      </button>
+                                    </li>
+                                  );
+                                })}
                               </ul>
                             ) : (
                               <p>No saved movies match that search.</p>
