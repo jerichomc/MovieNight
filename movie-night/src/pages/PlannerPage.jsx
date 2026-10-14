@@ -3,6 +3,8 @@ import { useState } from "react";
 function PlannerPage({
   movieNight,
   movieNights,
+  isSavingMovieNight,
+  movieNightError,
   onMovieNightChange,
   onCreateMovieNight,
   onDeleteMovieNight,
@@ -39,8 +41,10 @@ function PlannerPage({
       return;
     }
 
-    await onCreateMovieNight(event);
-    setIsFormOpen(false);
+    const wasSaved = await onCreateMovieNight(event);
+    if(wasSaved){
+      setIsFormOpen(false);
+    }
   }
 
   function handleOpenCreateForm() {
@@ -115,9 +119,19 @@ function PlannerPage({
               />
             </label>
 
-            <button type="submit">
-              {editingMovieNightId ? "Update Movie Night" : "Save Movie Night"}
+            <button type="submit" disabled={isSavingMovieNight}>
+              {isSavingMovieNight
+                ? "Saving..."
+                : editingMovieNightId
+                  ? "Update Movie Night"
+                  : "Save Movie Night"}
             </button>
+
+            {movieNightError && (
+              <p className="error-message" role="alert">
+                {movieNightError}
+              </p>
+            )}
 
             <button type="button" onClick={handleCloseForm}>
               Cancel

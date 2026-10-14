@@ -70,6 +70,9 @@ function App() {
   });
   const [editingMovieNightId, setEditingMovieNightId] = useState(null);
 
+  const [isSavingMovieNight, setIsSavingMovieNight] = useState(false)
+  const [movieNightError, setMovieNightError] = useState("");
+
   const [watchedMovies, setWatchedMovies] = useState([]);
 
   const [movieReview, setMovieReview] = useState({
@@ -318,54 +321,51 @@ function App() {
   });
 
   async function handleCreateMovieNight(event) {
-    event.preventDefault();
+  event.preventDefault(); //prevent default form submission
 
-    if (!authToken) {
-      navigate("/auth");
-      return;
-    }
+  if (!authToken) { //if not verified navigate to auth page
+    navigate("/auth");
+    return false;
+  }
 
-    if (!movieNight.title.trim()) {
-      return;
-    }
+  if (!movieNight.title.trim()) { //if title is empty return false to prevent submission
+    return false;
+  }
 
-    const movieNightData = {
-      title: movieNight.title.trim(),
-      date: movieNight.date,
-      location: movieNight.location.trim(),
-      notes: movieNight.notes.trim(),
-    };
+  const movieNightData = { //set movie night data to these values from the form
+    title: movieNight.title.trim(),
+    date: movieNight.date,
+    location: movieNight.location.trim(),
+    notes: movieNight.notes.trim(),
+  };
 
-    if (editingMovieNightId) {
-      try {
-        const updatedNight = await updateMovieNight(
-          editingMovieNightId,
-          movieNightData,
-          authToken,
-        );
+  setMovieNightError(""); //clear any existing error messages
+  setIsSavingMovieNight(true); //set saving state
 
-        setMovieNights(
-          movieNights.map((night) => {
-            if (night.id === editingMovieNightId) {
-              return updatedNight;
-            }
+  try {
+    if (editingMovieNightId) { //if we are editing an existing movie night
+      const updatedNight = await updateMovieNight(
+        editingMovieNightId,
+        movieNightData,
+        authToken,
+      );
 
-            return night;
-          }),
-        );
-      } catch (error) {
-        console.error(error);
-        return;
-      }
+      setMovieNights(
+        movieNights.map((night) => {
+          if (night.id === editingMovieNightId) {
+            return updatedNight;
+          }
+
+          return night;
+        }),
+      );
     } else {
-      try {
-        const createdNight = await createMovieNight(movieNightData, authToken);
+      const createdNight = await createMovieNight(
+        movieNightData,
+        authToken,
+      );
 
-        setMovieNights([...movieNights, createdNight]);
-      } catch (error) {
-        console.error(error);
-        return;
-      }
+      setMovieNights([...movieNights, createdNight]);
     }
 
     setEditingMovieNightId(null);
@@ -376,7 +376,17 @@ function App() {
       location: "",
       notes: "",
     });
+    return true;
+  } catch (error) {
+    console.error(error);
+    setMovieNightError(
+      "Could not save the movie night. Please try again.",
+    );
+    return false;
+  } finally {
+    setIsSavingMovieNight(false);
   }
+}
 
   async function handleDeleteMovieNight(movieNightId) {
     try {
@@ -730,6 +740,8 @@ function App() {
                 onAddToMovieNight={handleAddMovieToNight}
                 onDeleteFromMovieNight={handleDeleteFromMovieNight}
                 watchlist={watchlist}
+                isSavingMovieNight={isSavingMovieNight}
+                movieNightError={movieNightError}
               />
             }
           />
