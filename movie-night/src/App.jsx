@@ -73,6 +73,9 @@ function App() {
   const [isSavingMovieNight, setIsSavingMovieNight] = useState(false)
   const [movieNightError, setMovieNightError] = useState("");
 
+  const [isSavingReview, setIsSavingReview] = useState(false);
+  const [reviewError, setReviewError] = useState("");
+
   const [watchedMovies, setWatchedMovies] = useState([]);
 
   const [movieReview, setMovieReview] = useState({
@@ -485,7 +488,10 @@ function App() {
       movie: reviewMovie,
       returnPath: options.returnPath || location.pathname,
       removeFromWatchlist: options.removeFromWatchlist || false,
+
+      
     });
+    setReviewError("");
 
     navigate("/review");
   }
@@ -541,6 +547,7 @@ function App() {
       });
     } catch (error) {
       console.error(error);
+      throw(error);
     }
   }
 
@@ -555,14 +562,19 @@ function App() {
       );
     } catch (error) {
       console.error(error);
+      return false;
     }
   }
 
   async function handleSaveActiveReview() {
-    if (!reviewContext) {
-      return;
-    }
+  if (!reviewContext) {
+    return;
+  }
 
+  setReviewError("");
+  setIsSavingReview(true);
+
+  try {
     await handleSaveMovieReview(reviewContext.movie);
 
     if (reviewContext.removeFromWatchlist) {
@@ -570,9 +582,16 @@ function App() {
     }
 
     const returnPath = reviewContext.returnPath || "/watched";
+
     setReviewContext(null);
     navigate(returnPath);
+  } catch (error) {
+    console.error(error);
+    setReviewError("Could not save your review. Please try again.");
+  } finally {
+    setIsSavingReview(false);
   }
+}
 
   function handleCancelReview() {
     const returnPath = reviewContext?.returnPath || "/";
@@ -719,6 +738,8 @@ function App() {
                 onMovieReviewChange={handleReviewChange}
                 onSaveReview={handleSaveActiveReview}
                 onCancelReview={handleCancelReview}
+                isSavingReview={isSavingReview}
+                reviewError={reviewError}
               />
             }
           />

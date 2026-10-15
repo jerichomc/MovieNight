@@ -6,6 +6,8 @@ function ReviewPage({
   onMovieReviewChange,
   onSaveReview,
   onCancelReview,
+  isSavingReview,
+  reviewError,
 }) {
   if (!movie) {
     return (
@@ -77,8 +79,19 @@ function ReviewPage({
           </label>
 
           <div className="review-page-actions">
-            <button type="submit">Save Review</button>
-            <button type="button" onClick={onCancelReview}>
+            <button type="submit" disabled={isSavingReview}>
+              {isSavingReview ? "Saving..." : "Save Review"}
+            </button>
+            {reviewError && (
+              <p className="error-message" role="alert">
+                {reviewError}
+              </p>
+            )}
+            <button
+              type="button"
+              onClick={onCancelReview}
+              disabled={isSavingReview}
+            >
               Cancel
             </button>
           </div>
